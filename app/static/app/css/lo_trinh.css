@@ -1,0 +1,238 @@
+/* General Styles */
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #fff; /* Corrected: #fff is shorthand for #ffffff */
+    color: #333;
+}
+
+.container {
+    width: 85%;
+    margin: auto;
+    overflow: hidden;
+    padding: 20px 0;
+}
+
+/* Hero Section */
+#hero {
+    background-color: #1a73e8;
+    color: #fff;
+    padding: 30px 0;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.hero-content h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: #eaf5ff;
+}
+.hero-content .slogan {
+    font-size: 1em;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+/* Stats */
+.stats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.stat {
+    width: 200px;
+    margin: 20px;
+    background-color: #fff; /* Corrected: #fff is shorthand for #ffffff */
+    color: #333; /* Corrected: Using #333 for readability */
+    border-radius: 50%;
+    padding: 30px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.stat .number {
+    font-size: 2.5em;
+    font-weight: bold;
+    display: block;
+}
+
+.stat .label {
+    font-size: 1.2em;
+    display: block;
+}
+
+.stat .sub-label {
+    font-size: 0.9em;
+    display: block;
+}
+
+/* Course Details Section */
+#course-details h1 {
+    font-size: 2em;
+    color: #0056b3;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Course Section */
+.course {
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.course-intro {
+    background-color: #1a73e8;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+.course-container {
+    width: 85%;
+    margin: auto;
+    overflow: hidden; /* Corrected: Changed overflow:hidden to overflow:hidden; */
+}
+
+.course-hero-content h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    color: #fff; /* Corrected: Using #fff for white */
+}
+
+.course-hero-content p {
+    font-size: 1em; /* Changed from 2em to 1em, for readability */
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.course h2 {
+    font-size: 1.5em;
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.course .target {
+    font-style: italic;
+    color: #555;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.course h3 {
+    font-size: 1.3em;
+    color: #0056b3;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Stages Layout */
+.stages {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.stage {
+    width: 30%;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 15px;
+    background-color: #eaf5ff;
+    border-radius: 8px;
+}
+
+.stage h4 {
+    font-size: 1.1em;
+    color: #0056b3;
+    margin-bottom: 8px;
+}
+
+.stage ul {
+    list-style: none;
+    padding: 0;
+}
+
+.stage li {
+    margin-bottom: 3px;
+    text-align: left;
+}
+
+.stage h4:before {
+    content: "🔹";
+    margin-right: 5px;
+    color: #007bff;
+}
+
+.stage li:before {
+    content: "✔️";
+    margin-right: 5px;
+    color: #28a745;
+}
+
+/* Call to Action */
+.cta {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.button {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #28a745;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #218838;
+}
+
+/* Course Stats */
+.course-hero-content .stats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.course-hero-content .stat {
+    width: 200px;
+    margin: 20px;
+    background-color: #fff;
+    color: #333;
+    border-radius: 50%;
+    padding: 30px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.course-hero-content .stat .label {
+    font-size: 1em;
+    display: block;
+    font-weight: bold;
+    text-align: center;
+}
+
+.course-hero-content .stat .number {
+    font-size: 2.5em;
+    font-weight: bold;
+}
+.hero-content h2 {
+    font-size: 1.8em; /* Corrected: Changed from 18em to 1.8em */
+    margin-bottom: 10px;
+    color: #fff; /* Removed duplicate and corrected: Using #fff for white */
+}
+#hero {
+    padding: 10px;
+}

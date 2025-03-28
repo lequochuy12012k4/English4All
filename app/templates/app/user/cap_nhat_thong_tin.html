@@ -1,0 +1,133 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Cập nhật - {% endblock title %}
+{% load socialaccount %}
+{% block content %}
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<section class="hero">
+    <div class="hero-content">
+        <h1>Cập nhật thông tin</h1>
+        <p>Học tiếng Anh trực tuyến với các khóa học chất lượng cao, bài giảng thú vị và đội ngũ giáo viên tận tâm.
+        </p>
+    </div>
+    <div class="hero-image">
+        <img src="{% static 'app\img\z.jpg' %}" alt="Người học tiếng Anh">
+    </div>
+</section>
+<style>
+/* Custom styles for the registration form */
+.container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Make items stretch to fill container width */
+}
+
+label {
+    margin-bottom: 5px;
+    color: #555;
+    text-align: left;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"] { /* Add tel for phone number */
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 25px; /* Add more roundness */
+    font-size: 16px;
+    width: 100%;           /* Take full width */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+.btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 14px 30px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+    margin-top: 10px; /* Add space above the button */
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+p {
+    margin-top: 20px;
+    color: #777;
+}
+
+.social-login {
+    margin-top: 20px;
+    display: flex; /* Arrange icons in a row */
+    justify-content: center; /* Center the icons */
+    align-items: center;    /* Vertically align icons */
+}
+
+.social-login a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;      /* Add spacing between icons */
+    text-decoration: none;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.social-login a:hover {
+    color: #007bff;
+}
+
+.social-login img {
+    width: 24px;        /* Larger icons */
+    height: 24px;
+    vertical-align: middle;
+    margin-right: 5px; /* Add space to right of icon */
+}
+</style>
+
+<body>
+
+    <div class="container">
+        <h2>Cập nhật thông tin</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <label for=""><b>Họ</b></label>
+            {{form.first_name}}
+            <label for=""><b>Tên</b></label>
+            {{form.last_name}}
+            <label for=""><b>Tên đăng nhập</b></label>
+            {{form.username}}
+            <label for=""><b>Email</b></label>
+            {{form.email}}
+            <input type="submit" class="btn" value="Cập nhật">
+        </form>
+    </div>
+
+</body>
+{% endblock content %}

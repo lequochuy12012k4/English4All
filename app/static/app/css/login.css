@@ -1,0 +1,131 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #495057;
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+/* English4All Styles */
+.english4all-text {
+    font-size: 30px; /* Make it larger */
+    font-weight: 700; /* Even bolder */
+    color: #007bff; /* Match primary color */
+    margin-bottom: 20px; /* Space between logo and form */
+    text-align: center; /* Center the text */
+}
+
+/* Container Styles */
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    width: 400px;
+    max-width: 90%;
+    /* Removed text-align: center from container */
+}
+
+/* Heading Styles */
+h2 {
+    text-align: center;
+    color: #343a40;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* Input Styles */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+/* Button Styles */
+.btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* Social Login Styles */
+.social-login {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.social-login a {
+    display: inline-block;
+    margin: 0 15px;
+    font-size: 24px;
+    color: #495057;
+    transition: color 0.3s ease;
+}
+
+.social-login a:hover {
+    color: #007bff;
+    transform: translateY(-2px);
+}
+
+/* Link Styles */
+p {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+p a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+p a:hover {
+    color: #0056b3;
+}
+form ::placeholder {
+    color: #0056b3;
+}
+.social-login a {
+    display: inline-flex;
+    align-items: center; /* Vertically center the text and image */
+    justify-content: center; /* Horizontally center the content */
+    gap: 5px;  /* Adjust the space between image and text */
+  }
+  .social-login img {
+    width: 20px; /* Adjust image size as needed */
+    height: 20px; /* Adjust image size as needed */
+    vertical-align: middle;
+  }

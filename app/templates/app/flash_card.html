@@ -1,0 +1,564 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}FlashCard - {% endblock title %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Cards Tiếng Anh</title>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Flash Card</h1>
+            <p>Hệ thống chúng tôi luôn cho bạn các từ mới bằng việc sử dụng flash card để dễ dàng cho việc học của bạn.</p>
+            <p> Các bạn cũng có thể tự thêm từ mới của bạn vào flash card của chúng tôi. Nhấn <a href="{%url 'flash_card_tu_hoc' %}">tại đây</a> để trải nghiệm
+            </p>
+        </div>
+        <div class="slider">
+            <div class="slide">
+                <img src="{% static 'app/images/photo/slider_flashcard/flc.png' %}" alt="Người học tiếng Anh 1">
+            </div>
+            <div class="slide">
+                <img src="{% static 'app/images/photo/slider_flashcard/flc.png' %}" alt="Người học tiếng Anh 2">
+            </div>
+            <div class="slide">
+                <img src="{% static 'app/images/photo/slider_flashcard/flc.png' %}" alt="Người học tiếng Anh 3">
+            </div>
+            <!-- Add more slides here -->
+            <style>
+                .slider {
+                    width: 500px;
+                    /* Adjust as needed */
+                    height: 300px;
+                    /* Adjust as needed */
+                    overflow: hidden;
+                    position: relative;
+                }
+
+                .slide {
+                    width: 100%;
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    left: 100%; /* Start off-screen to the right */
+                    transition: left 1s ease-in-out;
+                }
+
+                .slide img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    /* Maintain aspect ratio */
+                }
+
+                .slide.active {
+                    left: 0; /* Bring the active slide into view */
+                }
+            </style>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const slides = document.querySelectorAll('.slide');
+                    let currentSlide = 0;
+        
+                    // Initially set all slides to be offscreen to the right.  This makes the "cover" animation work
+                    slides.forEach((slide, index) => {
+                        slide.style.left = '100%';
+                        if (index === 0) {
+                            slide.classList.add('active');
+                            slide.style.left = '0'; // Make the initial slide visible.
+                        } else {
+                            slide.classList.remove('active');
+                        }
+                    });
+        
+                    function showSlide(n) {
+                        // Remove active class from current slide
+                        slides[currentSlide].classList.remove('active');
+                        slides[currentSlide].style.left = '-100%'; // Move current slide offscreen to the left
+        
+                        // Update current slide
+                        currentSlide = n;
+        
+                        // Add active class to new slide
+                        slides[currentSlide].classList.add('active');
+                        slides[currentSlide].style.left = '0'; // Slide in from the right
+                    }
+        
+                    function nextSlide() {
+                        let next = (currentSlide + 1) % slides.length;
+                        showSlide(next);
+                    }
+        
+                    setInterval(nextSlide, 3000); // Change slide every 3 seconds
+                });
+            </script>
+        </div>
+    </section>
+    <style>
+        .hero {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 50px;
+            background-color: #f9f9f9;
+        }
+
+        .hero-content {
+            max-width: 500px;
+        }
+
+        .hero-content h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .hero-content p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .hero-image img {
+            max-width: 400px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+            padding-bottom: 150px;
+        }
+        
+        .title {
+            margin-bottom: 24px;
+            margin-top: 24px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* Phần card container */
+        .card-container {
+            width: 320px;
+            height: 192px;
+            perspective: 1000px;
+            margin-bottom: 10px;
+        }
+        
+        /* Phần inner chứa cả mặt trước và mặt sau */
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        
+        /* Hiệu ứng lật khi có class flipped */
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        /* Style chung cho cả mặt trước và mặt sau */
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        /* Mặt trước (từ vựng) */
+        .card-front {
+            background-color: white;
+            border: 1px solid #e5e5e5;
+        }
+        
+        /* Mặt sau (nghĩa và ví dụ) - quay 180 độ */
+        .card-back {
+            background-color: #2563eb;
+            color: white;
+            transform: rotateY(180deg);
+        }
+        
+        .card-word {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .card-meaning {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .card-example {
+            font-size: 14px;
+            font-style: italic;
+            text-align: center;
+        }
+        
+        .flip-hint {
+            font-size: 14px;
+            margin-top: 8px;
+            color: #6b7280;
+        }
+        
+        .button-group {
+            display: flex;
+            margin-top: 24px;
+            gap: 16px;
+            padding-top: 15px;
+        }
+        
+        button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-nav {
+            background-color: #e5e5e5;
+        }
+        
+        .btn-nav:hover:not(:disabled) {
+            background-color: #d5d5d5;
+        }
+        
+        .btn-learned {
+            background-color: #e5e5e5;
+        }
+        
+        .btn-learned.active {
+            background-color: #22c55e;
+            color: white;
+        }
+        
+        .btn-shuffle {
+            margin-top: 16px;
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .btn-shuffle:hover {
+            background-color: #2563eb;
+        }
+        
+        .progress-section {
+            margin-top: 32px;
+            width: 320px;
+        }
+        
+        .progress-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e5e5e5;
+            border-radius: 9999px;
+            height: 16px;
+        }
+        
+        .progress-bar {
+            background-color: #22c55e;
+            height: 16px;
+            border-radius: 9999px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .add-card-form {
+             display: none; /* Hidden by default */
+             margin-top: 20px;
+             padding: 20px;
+             border: 1px solid #ddd;
+             border-radius: 5px;
+             background-color: #f9f9f9;
+         }
+
+         .add-card-form.active {
+             display: block;
+         }
+
+         .add-card-form label {
+             display: block;
+             margin-bottom: 5px;
+             font-weight: bold;
+         }
+
+         .add-card-form input,
+         .add-card-form textarea {
+             width: 100%;
+             padding: 8px;
+             margin-bottom: 10px;
+             border: 1px solid #ccc;
+             border-radius: 4px;
+             box-sizing: border-box; /* Important for padding */
+         }
+
+         .add-card-form button {
+             background-color: #4CAF50; /* Green */
+             color: white;
+             padding: 10px 15px;
+             border: none;
+             border-radius: 4px;
+             cursor: pointer;
+         }
+
+         .add-card-form button:hover {
+             background-color: #3e8e41;
+         }
+
+         #add-card-button {
+             background-color: #555;
+             color: white;
+             padding: 10px 15px;
+             border: none;
+             border-radius: 4px;
+             cursor: pointer;
+             margin-top: 10px;
+         }
+
+         #add-card-button:hover {
+             background-color: #333;
+         }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Flash Cards Tiếng Anh (<span id="current-index">1</span>/<span id="total-cards">{{ data_word|length }}</span>)</div>
+        
+        <div class="card-container">
+            <div class="card-inner" id="card-inner">
+                <div class="card-front">
+                    <div class="card-word" id="card-word">{{ data_word.0.word }}</div>
+                </div>
+                <div class="card-back" >
+                    <div class="card-meaning" id="card-meaning">{{ data_word.0.meaning }}</div>
+                    <div class="card-example" id="card-example">{{ data_word.0.example }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flip-hint" id="flip-hint">Nhấn để xem nghĩa</div>
+        
+        <div class="button-group">
+            <button class="btn-nav" id="btn-previous" disabled>Trước</button>
+            <button class="btn-learned" id="btn-learned">Đánh dấu đã học</button>
+            <button class="btn-nav" id="btn-next">Tiếp</button>
+        </div>
+        
+        <button class="btn-shuffle" id="btn-shuffle">Xáo trộn thẻ</button>
+
+        <button id="add-card-button">Thêm từ mới</button>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <div class="add-card-form" id="add-card-form">
+            <label for="new-word">Từ mới:</label>
+            <input type="text" id="new-word" name="new_word">
+
+            <label for="new-meaning">Nghĩa:</label>
+            <input type="text" id="new-meaning" name="new_meaning">
+
+            <label for="new-example">Ví dụ:</label>
+            <textarea id="new-example" name="new_example" style="font-family: 'Times New Roman', Times, serif;"></textarea>
+
+            <button id="save-new-card" >Lưu</button>
+            </div>
+        </form>
+        <div class="progress-section">
+            <div class="progress-title">Tiến độ học tập:</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-text" id="progress-text">0/{{ data_word|length }} từ đã học (0%)</div>
+        </div>
+    </div>
+
+    <script>
+        const cardInner = document.getElementById('card-inner');
+        const btnPrevious = document.getElementById('btn-previous');
+        const btnNext = document.getElementById('btn-next');
+        const btnLearned = document.getElementById('btn-learned');
+        const btnShuffle = document.getElementById('btn-shuffle');
+        const cardWord = document.getElementById('card-word');
+        const cardMeaning = document.getElementById('card-meaning');
+        const cardExample = document.getElementById('card-example');
+        const currentIndexElement = document.getElementById('current-index');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const flipHint = document.getElementById('flip-hint');
+        const totalCards = {{ data_word|length }};
+        const addCardButton = document.getElementById('add-card-button');
+        const addCardForm = document.getElementById('add-card-form');
+        const saveNewCardButton = document.getElementById('save-new-card');
+        const newWordInput = document.getElementById('new-word');
+        const newMeaningInput = document.getElementById('new-meaning');
+        const newExampleInput = document.getElementById('new-example');
+
+
+        let currentIndex = 0;
+        let learnedCards = new Array(totalCards).fill(false);
+
+        const words = [
+            {% for word in data_word %}
+            {
+                word: "{{ word.word }}",
+                meaning: "{{ word.meaning }}",
+                example: "{{ word.example }}"
+            },
+            {% endfor %}
+        ];
+
+        function updateCard() {
+            cardWord.textContent = words[currentIndex].word;
+            cardMeaning.textContent = words[currentIndex].meaning;
+            cardExample.textContent = words[currentIndex].example;
+            currentIndexElement.textContent = currentIndex + 1;
+        }
+
+        function updateButtons() {
+            btnPrevious.disabled = currentIndex === 0;
+            btnNext.disabled = currentIndex === words.length - 1; //Use words.length instead of totalCards.
+            btnLearned.classList.toggle('active', learnedCards[currentIndex]);
+        }
+
+        function updateProgress() {
+            const learnedCount = learnedCards.filter(Boolean).length;
+            const progressPercentage = (learnedCount / words.length) * 100; //Use words.length instead of totalCards.
+            progressBar.style.width = `${progressPercentage}%`;
+            progressText.textContent = `${learnedCount}/${words.length} từ đã học (${progressPercentage.toFixed(0)}%)`; //Use words.length instead of totalCards.
+        }
+
+        updateCard();
+        updateButtons();
+        updateProgress();
+
+        cardInner.addEventListener('click', () => {
+            cardInner.classList.toggle('flipped');
+            flipHint.style.display = 'none';
+        });
+
+        btnPrevious.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCard();
+                updateButtons();
+                cardInner.classList.remove('flipped');
+                flipHint.style.display = 'block';
+            }
+        });
+
+        btnNext.addEventListener('click', () => {
+            if (currentIndex < words.length - 1) { //Use words.length instead of totalCards.
+                currentIndex++;
+                updateCard();
+                updateButtons();
+                cardInner.classList.remove('flipped');
+                flipHint.style.display = 'block';
+            }
+        });
+
+        btnLearned.addEventListener('click', () => {
+            learnedCards[currentIndex] = !learnedCards[currentIndex];
+            btnLearned.classList.toggle('active', learnedCards[currentIndex]);
+            updateProgress();
+        });
+
+        btnShuffle.addEventListener('click', () => {
+            shuffleArray(words);
+            currentIndex = 0;
+            learnedCards = new Array(words.length).fill(false); // Reset learned cards
+            updateCard();
+            updateButtons();
+            updateProgress();
+            cardInner.classList.remove('flipped');
+            flipHint.style.display = 'block';
+        });
+
+        // Function to shuffle array (Fisher-Yates Shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Initial update
+        updateCard();
+        updateButtons();
+
+        //Add card functionality
+        addCardButton.addEventListener('click', () => {
+            addCardForm.classList.toggle('active');
+        });
+
+        saveNewCardButton.addEventListener('click', () => {
+             const newWord = newWordInput.value.trim();
+             const newMeaning = newMeaningInput.value.trim();
+             const newExample = newExampleInput.value.trim();
+
+             if (newWord && newMeaning && newExample) {
+                 const newCard = {
+                     word: newWord,
+                     meaning: newMeaning,
+                     example: newExample
+                 };
+
+                words.push(newCard);  // Add to the array
+                learnedCards.push(false); // Add to the learned cards array
+                totalCards++;
+
+                // Reset input fields
+                newWordInput.value = '';
+                newMeaningInput.value = '';
+                newExampleInput.value = '';
+
+                // Hide the form
+                addCardForm.classList.remove('active');
+
+                //Update the display
+                updateCard();
+                updateButtons();
+                updateProgress();
+                currentIndex = words.length -1; //Go to the newly created card
+                updateCard();
+                updateButtons();
+             } else {
+                alert('Vui lòng điền đầy đủ thông tin.');
+             }
+         });
+    </script>
+</body>
+{% endblock content %}

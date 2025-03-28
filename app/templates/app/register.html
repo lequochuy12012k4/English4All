@@ -1,0 +1,70 @@
+{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Đăng ký</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{% static 'app\css\register.css' %}">
+    <style>
+        .social-login a {
+            display: inline-flex;
+            align-items: cen ter;
+            /* Vertically center the text and image */
+            justify-content: center;
+            /* Horizontally center the content */
+            gap: 5px;
+            /* Adjust the space between image and text */
+        }
+
+        .social-login img {
+            width: 20px;
+            /* Adjust image size as needed */
+            height: 20px;
+            /* Adjust image size as needed */
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="english4all-text">
+        <a href="{%url 'home' %}" style="text-decoration: none;">
+            English4All
+        </a>
+    </div>
+    <div class="container">
+        <h2>Đăng ký</h2>
+        <form method="POST" action="" class="">
+            {% csrf_token %}
+            {{form.first_name}}
+            {{form.last_name}}
+            {{form.username}}
+            {{form.email}}
+            {{form.password1}}
+            {{form.password2}}
+            <input type="submit" class="btn" value="Đăng ký">
+            <p>Hoặc đăng ký bằng:</p>
+            <div class="social-login">
+                <a href="{% provider_login_url 'google' %}" style="text-decoration: none;">
+                    <img src="{% static 'app\images\icons\Google.png' %}" alt="">
+                    Google
+                </a>
+                <a href="{% provider_login_url 'github' %}" style="text-decoration: none;">
+                    <img src="{% static 'app\images\icons\github.png' %}" alt="">
+                    Github
+                </a>
+                <a href="{% provider_login_url 'facebook' %}" style="text-decoration: none;">
+                    <img src="{% static 'app\images\icons\facebook.png' %}" alt="">
+                    Facebook
+                </a>
+            </div>
+            <p>Bạn đã có tài khoản? <a href="{%url 'login' %}" id="goToLogin">Đăng nhập</a></p>
+        </form>
+    </div>
+</body>
+
+</html>

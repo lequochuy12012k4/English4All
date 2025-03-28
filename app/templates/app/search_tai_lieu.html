@@ -1,0 +1,518 @@
+{% extends  'app/tai_lieu.html'%}
+{% load static %}
+{% block title %}Tài liệu - {% endblock title %}
+
+{% block content %}
+
+<body>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Tài liệu</h1>
+            <p>Học tiếng Anh trực tuyến với các khóa học chất lượng cao, bài giảng thú vị và đội ngũ giáo viên tận tâm.
+            </p>
+        </div>
+        <div class="slider">
+            <div class="slide">
+                <img src="{% static 'app/images/photo/slider_tailieu/tl1.png' %}" alt="Người học tiếng Anh 1">
+            </div>
+            <div class="slide">
+                <img src="{% static 'app/images/photo/slider_tailieu/tl2.png' %}" alt="Người học tiếng Anh 2">
+            </div>
+            <div class="slide">
+                <img src="{% static 'app/images/photo/slider_tailieu/tl3.png' %}" alt="Người học tiếng Anh 3">
+            </div>
+            <div class="slide">
+                <img src="{% static 'app/images/photo/slider_tailieu/tl4.png' %}" alt="Người học tiếng Anh 3">
+            </div>
+            <!-- Add more slides here -->
+        </div>
+    </section>
+
+    {% block tai_lieu %}
+    <section id="courses" class="courses">
+        <form class="search" method="POST" action="{% url 'search_tai_lieu' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-search">
+                <a href=""><img src="{% static 'app\images\icons\search.png' %}" class="icon_search" alt="search_icon"></a>
+            </button>
+            <input type="search" name="search_tai_lieu" id="" placeholder="Tìm tài liệu" class="search_tai_lieu">
+        </form>
+        <div class="course-list">
+            {% for tai_lieu in keys_tai_lieu %}
+            <div class="resource-item">
+                <div class="resource-image">
+                    <img src="{{ tai_lieu.ImageURL }}" alt="{{ tai_lieu.header }}">
+                </div>
+                <div class="resource-content">
+                    <h2>{{ tai_lieu.name }}</h2>
+                    <p>{{ tai_lieu.content }}</p>
+                    {% if user.is_authenticated %}
+                    {% if tai_lieu.file_upload %}
+                    <a href="{{ tai_lieu.FileURL}}" class="download-button" download>DOWNLOAD</a>
+                    {% else %}
+                    <p><i>File chưa có sẵn!</i></p>
+                    {% endif %}
+                    {% else %}
+                    <a href="{%url 'login' %}" class="download-button">Đăng nhập</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <style>
+            .search{
+                padding-bottom: 75px;
+            }
+            .btn-search{
+                background: none;
+                border: none;
+            }
+            .icon_search{
+                width: 50px;
+                /* Adjust image size as needed */
+                height: 50px;
+                /* Adjust image size as needed */
+                vertical-align: middle;
+            }
+            .search_tai_lieu{
+                width: 600px;
+                height: 50px;
+                font-size: 20px;
+                text-align: center;
+                border-radius: 25px;
+            }
+            .course-list {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .resource-item {
+                display: flex;
+                align-items: center;
+                /* Vertically align image and content */
+                margin-bottom: 30px;
+                /* Increased margin */
+                border-bottom: 1px solid #f0f0f0;
+                padding-bottom: 20px;
+                padding-left: 200px;
+                /* Increased padding */
+            }
+
+            .resource-image {
+                width: 150px;
+                /*Increased image width*/
+                height: 120px;
+                /*Increased image height*/
+                margin-right: 20px;
+                overflow: hidden;
+                position: relative;
+                border-radius: 10px;
+                /*Increased border radius*/
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #fff;
+                flex-shrink: 0;
+            }
+
+            .resource-image img {
+                max-width: 100%;
+                max-height: 100%;
+                width: auto;
+                height: auto;
+                object-fit: contain;
+                transition: transform 0.3s ease;
+                padding: 8px;
+                /*Increased padding*/
+            }
+
+            .resource-image img:hover {
+                transform: scale(1.08);
+                /*Increased scale on hover*/
+            }
+
+            .resource-content {
+                flex: 1;
+                text-align: left;
+            }
+
+            .resource-content h2 {
+                font-size: 20px;
+                /*Increased font size*/
+                margin-bottom: 8px;
+                /*Adjusted margin*/
+                color: #000;
+            }
+
+            .resource-content p {
+                font-size: 16px;
+                /*Increased font size*/
+                color: #555;
+                line-height: 1.4;
+                /*Adjusted line height*/
+                margin-bottom: 10px;
+                /*Adjusted margin*/
+            }
+
+            .download-button {
+                display: inline-block;
+                background-color: #ff3333;
+                color: white;
+                padding: 8px 16px;
+                /*Increased padding*/
+                border-radius: 4px;
+                /*Increased border radius*/
+                font-size: 14px;
+                /*Increased font size*/
+                font-weight: bold;
+                text-decoration: none;
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+        </style>
+
+        <script>
+            function showPreview(documentUrl, documentTitle) {
+                var modal = document.createElement('div');
+                modal.className = 'document-modal';
+                modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-button" onclick="closeModal()">&times;</span>
+                    <h2>${documentTitle}</h2>
+                    <iframe src="${documentUrl}" width="100%" height="500px"></iframe>
+                    <a href="${documentUrl}" download class="download-button-modal">TẢI XUỐNG</a>
+                </div>
+            `;
+            }
+        </script>
+    </section>
+    {% endblock tai_lieu %}
+    <section id="testimonials" class="testimonials">
+        <h2>Học viên nói gì về English4All</h2>
+        <div class="testimonial-list">
+            <div class="testimonial-item">
+                <p>"Tôi đã cải thiện đáng kể khả năng tiếng Anh của mình nhờ các khóa học tại đây. Giáo viên rất nhiệt
+                    tình và bài giảng rất thú vị."</p>
+                <p>- Nguyễn Văn A</p>
+            </div>
+
+            <div class="testimonial-item">
+                <p>"Giao diện thân thiện, dễ sử dụng. Các bài tập tương tác giúp tôi học tiếng Anh hiệu quả hơn."</p>
+                <p>- Trần Thị B</p>
+            </div>
+
+            <!-- Thêm các lời chứng thực khác vào đây -->
+        </div>
+    </section>
+    <section class="university-logos">
+        <div class="">
+            <h2>English4All tự hào khi là lựa chọn của +30.000 sinh viên<br>tại nhiều trường Đại học, Cao đẳng</h2>
+            <div class="logo-grid">
+                <img src="{% static 'app/images/university_logos/101.jpg' %}" alt="Logo 2">
+                <img src="{% static 'app/images/university_logos/2.jpg' %}" alt="Logo 2">
+                <img src="{% static 'app/images/university_logos/3.jpg' %}" alt="Logo 3">
+                <img src="{% static 'app/images/university_logos/4.jpg' %}" alt="Logo 4">
+                <img src="{% static 'app/images/university_logos/5.jpg' %}" alt="Logo 5">
+                <img src="{% static 'app/images/university_logos/6.jpg' %}" alt="Logo 6">
+                <img src="{% static 'app/images/university_logos/7.jpg' %}" alt="Logo 7">
+                <img src="{% static 'app/images/university_logos/8.jpg' %}" alt="Logo 8">
+                <img src="{% static 'app/images/university_logos/9.jpg' %}" alt="Logo 9">
+                <img src="{% static 'app/images/university_logos/102.jpg' %}" alt="Logo 10">
+                <img src="{% static 'app/images/university_logos/11.jpg' %}" alt="Logo 11">
+                <img src="{% static 'app/images/university_logos/12.jpg' %}" alt="Logo 12">
+                <img src="{% static 'app/images/university_logos/13.jpg' %}" alt="Logo 13">
+                <img src="{% static 'app/images/university_logos/14.jpg' %}" alt="Logo 14">
+                <img src="{% static 'app/images/university_logos/15.jpg' %}" alt="Logo 15">
+                <img src="{% static 'app/images/university_logos/16.jpg' %}" alt="Logo 16">
+                <img src="{% static 'app/images/university_logos/17.jpg' %}" alt="Logo 17">
+                <img src="{% static 'app/images/university_logos/18.jpg' %}" alt="Logo 18">
+                <img src="{% static 'app/images/university_logos/19.jpg' %}" alt="Logo 19">
+                <img src="{% static 'app/images/university_logos/20.jpg' %}" alt="Logo 20">
+                <img src="{% static 'app/images/university_logos/21.jpg' %}" alt="Logo 21">
+                <img src="{% static 'app/images/university_logos/22.jpg' %}" alt="Logo 22">
+                <img src="{% static 'app/images/university_logos/23.jpg' %}" alt="Logo 23">
+                <img src="{% static 'app/images/university_logos/24.jpg' %}" alt="Logo 24">
+                <img src="{% static 'app/images/university_logos/25.jpg' %}" alt="Logo 25">
+                <img src="{% static 'app/images/university_logos/26.jpg' %}" alt="Logo 26">
+                <img src="{% static 'app/images/university_logos/27.jpg' %}" alt="Logo 27">
+                <img src="{% static 'app/images/university_logos/28.jpg' %}" alt="Logo 28">
+                <img src="{% static 'app/images/university_logos/29.jpg' %}" alt="Logo 29">
+                <img src="{% static 'app/images/university_logos/30.jpg' %}" alt="Logo 30">
+                <img src="{% static 'app/images/university_logos/31.jpg' %}" alt="Logo 31">
+                <img src="{% static 'app/images/university_logos/32.jpg' %}" alt="Logo 32">
+                <img src="{% static 'app/images/university_logos/33.png' %}" alt="Logo 33">
+                <img src="{% static 'app/images/university_logos/34.png' %}" alt="Logo 34">
+                <img src="{% static 'app/images/university_logos/35.png' %}" alt="Logo 35">
+                <img src="{% static 'app/images/university_logos/36.png' %}" alt="Logo 36">
+                <img src="{% static 'app/images/university_logos/37.webp' %}" alt="Logo 37">
+                <img src="{% static 'app/images/university_logos/38.png' %}" alt="Logo 38">
+                <img src="{% static 'app/images/university_logos/39.png' %}" alt="Logo 39">
+                <img src="{% static 'app/images/university_logos/40.jpg' %}" alt="Logo 40">
+            </div>
+        </div>
+    </section>
+    <style>
+        .university-logos {
+            padding: 50px 20px;
+            text-align: center;
+            background-color: #ffffff;
+        }
+
+        .university-logos h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 30px;
+        }
+
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            /* Responsive grid */
+            gap: 20px;
+            justify-items: center;
+            /* Center items horizontally within each cell */
+            align-items: center;
+            /* Vertically center items within each cell */
+            padding: 0;
+            /* Remove padding */
+            margin: 0 auto;
+            /* Center the grid itself */
+            max-width: 1200px;
+            /* Adjust as needed */
+        }
+
+        .logo-grid img {
+            max-width: 100px;
+            /* Adjust the size of the logos */
+            height: auto;
+            opacity: 0.7;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .logo-grid img:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            /* Slight zoom on hover */
+        }
+
+        /* Basic Slider Styles */
+        .slider {
+            width: 500px;
+            /* Adjust as needed */
+            height: 300px;
+            /* Adjust as needed */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            /* Start off-screen to the right */
+            transition: left 1s ease-in-out;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Maintain aspect ratio */
+        }
+
+        .slide.active {
+            left: 0;
+            /* Bring the active slide into view */
+        }
+    </style>
+    <!-- Contact Section -->
+    <section id="contact" class="contact_info">
+        <h2 id="contact_info" class="contact_info_title" style="text-align: center; padding-top: 15px;">Thông tin liên
+            hệ </h2>
+        <style>
+            body {
+                background-color: rgb(255, 255, 255);
+                color: rgb(0, 0, 0);
+                font-family: sans-serif;
+            }
+
+            .contact_info_title {
+                font-size: 30px;
+
+            }
+
+            .container {
+                display: flex;
+                justify-content: space-around;
+                padding: 20px;
+            }
+
+            .section {
+                width: 30%;
+            }
+
+            .address-item {
+                margin-bottom: 10px;
+            }
+
+            .contact-item {
+                margin-bottom: 10px;
+            }
+
+            .map-link {
+                display: block;
+                padding: 10px 20px;
+                border: 1px solid white;
+                text-align: center;
+                text-decoration: none;
+                color: white;
+                width: 100px;
+            }
+        </style>
+        </head>
+
+        <body>
+
+            <div class="container">
+                <div class="section">
+                    <h2>TRUNG TÂM ANH NGỮ English4All</h2>
+                    <div class="address-item">
+                        <strong>Cơ sở 1 – Kim Mã:</strong> Số 22A ngách 25, ngõ 629 Kim Mã, phường Ngọc Khánh, Ba Đình,
+                        Hà Nội
+                    </div>
+                    <div class="address-item">
+                        <strong>Cơ sở 2 – Hai Bà Trưng:</strong> Số 5, ngõ 128 phố Vọng, Hai Bà Trưng, Hà Nội
+                    </div>
+                    <div class="address-item">
+                        <strong>Cơ sở 3 – Hà Đông:</strong> Số 56, ngõ 54 Nguyễn Khuyến, Văn Quán, Hà Đông
+                    </div>
+                    <div class="address-item">
+                        <strong>Cơ sở 4 – Tây Sơn:</strong> Số 29 Tây Sơn, Đống Đa, Hà Nội
+                    </div>
+                    <div class="address-item">
+                        <strong>Cơ sở 5 – Nam Từ Liêm:</strong> 44 Nguyễn Hoàng, Nam Từ Liêm, Hà Nội
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>CÔNG TY TNHH TƯ VẤN GIÁO DỤC VÀ<br>XÚC TIẾN THƯƠNG MẠI English4All</h2>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i> 0377 602 075/ 0988 202 904
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i> infor@English4All.edu.vn
+                    </div>
+
+                    <h3>THỜI GIAN LÀM VIỆC</h3>
+                    <p>Sáng: 08:00 - 12:00 (Thứ Hai – thứ Bảy)</p>
+                    <p>Chiều: 13:30 - 17:30 (Thứ Hai – Thứ Bảy)</p>
+                    <p>Tối: 18:00 – 21:45 (Thứ Hai – Thứ Bảy)</p>
+                </div>
+
+                <div class="section">
+                    <h2 style="padding-left: 20px;">FANPAGE</h2>
+                    <div class="fanpage-item">
+                        <a href=""><img src="{% static 'app/images/photo/slider_home/slider1.png' %}" alt="photo.png"
+                                style="max-width: 30%; height: auto;"></a><br>
+                        <a href=""><img src="{% static 'app/images/photo/slider_home/slider1.png' %}" alt="photo2.png"
+                                style="max-width: 30%; height: auto;"></a>
+                        <style>
+                            .fanpage-item {
+                                height: auto;
+                                width: 100%;
+                                /* Adjust to 100% */
+                                text-align: center;
+                                /*Center fanpage in this section */
+                            }
+
+                            .fanpage-item img {
+                                display: block;
+                                /* Prevent images from floating next to each other */
+                                margin: 0 auto;
+                                margin-left: 15px;
+                            }
+                        </style>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <!-- Course Details Modal -->
+    <div id="courseDetailsModal" class="modal">
+        <div class="modal-content">
+            <h2 id="courseDetailsTitle"></h2>
+            <div id="courseDetailsContent">
+                <!-- Nội dung chi tiết khóa học sẽ được thêm vào đây -->
+            </div>
+        </div>
+    </div>
+
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <h2>Thông tin đăng ký</h2>
+        <form>
+            <input type="text" placeholder="Họ và tên">
+            <input type="email" placeholder="Email của bạn">
+            <input type="text" placeholder="Số điện thoại">
+            <input type="text" placeholder="Trường học">
+            <input list="loai_chung_chi" placeholder="Loại chứng chỉ">
+            <datalist id="loai_chung_chi">
+                <option value="TOEIC"></option>
+                <option value="IELTS"></option>
+                <option value="APTIS"></option>
+            </datalist>
+            <input type="number" placeholder="Mục tiêu">
+            <button type="submit" class="btn">Đăng ký ngay</button>
+        </form>
+    </section>
+
+    </html>
+
+
+    <script src="{% static 'app/js/home.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const slides = document.querySelectorAll('.slide');
+            let currentSlide = 0;
+
+            // Initially set all slides to be offscreen to the right.  This makes the "cover" animation work
+            slides.forEach((slide, index) => {
+                slide.style.left = '100%';
+                if (index === 0) {
+                    slide.classList.add('active');
+                    slide.style.left = '0'; // Make the initial slide visible.
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            function showSlide(n) {
+                // Remove active class from current slide
+                slides[currentSlide].classList.remove('active');
+                slides[currentSlide].style.left = '-100%'; // Move current slide offscreen to the left
+
+                // Update current slide
+                currentSlide = n;
+
+                // Add active class to new slide
+                slides[currentSlide].classList.add('active');
+                slides[currentSlide].style.left = '0'; // Slide in from the right
+            }
+
+            function nextSlide() {
+                let next = (currentSlide + 1) % slides.length;
+                showSlide(next);
+            }
+
+            setInterval(nextSlide, 3000); // Change slide every 3 seconds
+        });
+    </script>
+</body>
+
+{% endblock content %}

@@ -1,0 +1,529 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}FlashCard - {% endblock title %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Cards</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Flash Card</h1>
+            <p>Nhấn <a href="{%url 'flash_card' %}">tại đây</a> để học thêm các từ mới của hệ thống
+            </p>
+        </div>
+        <div class="slider">
+            <div class="slide">
+                <img src="{% static 'app/images/photo/slider_flashcard/flc.png' %}" alt="Người học tiếng Anh 1">
+            </div>
+            <div class="slide">
+                <img src="{% static 'app/images/photo/slider_flashcard/flc.png' %}" alt="Người học tiếng Anh 2">
+            </div>
+            <div class="slide">
+                <img src="{% static 'app/images/photo/slider_flashcard/flc.png' %}" alt="Người học tiếng Anh 3">
+            </div>
+            <!-- Add more slides here -->
+            <style>
+                .slider {
+                    width: 500px;
+                    /* Adjust as needed */
+                    height: 300px;
+                    /* Adjust as needed */
+                    overflow: hidden;
+                    position: relative;
+                }
+
+                .slide {
+                    width: 100%;
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    left: 100%; /* Start off-screen to the right */
+                    transition: left 1s ease-in-out;
+                }
+
+                .slide img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    /* Maintain aspect ratio */
+                }
+
+                .slide.active {
+                    left: 0; /* Bring the active slide into view */
+                }
+            </style>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const slides = document.querySelectorAll('.slide');
+                    let currentSlide = 0;
+        
+                    // Initially set all slides to be offscreen to the right.  This makes the "cover" animation work
+                    slides.forEach((slide, index) => {
+                        slide.style.left = '100%';
+                        if (index === 0) {
+                            slide.classList.add('active');
+                            slide.style.left = '0'; // Make the initial slide visible.
+                        } else {
+                            slide.classList.remove('active');
+                        }
+                    });
+        
+                    function showSlide(n) {
+                        // Remove active class from current slide
+                        slides[currentSlide].classList.remove('active');
+                        slides[currentSlide].style.left = '-100%'; // Move current slide offscreen to the left
+        
+                        // Update current slide
+                        currentSlide = n;
+        
+                        // Add active class to new slide
+                        slides[currentSlide].classList.add('active');
+                        slides[currentSlide].style.left = '0'; // Slide in from the right
+                    }
+        
+                    function nextSlide() {
+                        let next = (currentSlide + 1) % slides.length;
+                        showSlide(next);
+                    }
+        
+                    setInterval(nextSlide, 3000); // Change slide every 3 seconds
+                });
+            </script>
+        </div>
+    </section>
+    <div class="container">
+        {% if user.is_authenticated %}
+        <div class="title">Flash Cards Tiếng Anh (<span id="current-index">1</span>/<span id="total-cards">27</span>)
+        </div>
+        <div class="card-container">
+            <div class="card-inner" id="card-inner">
+                <div class="card-front">
+                    <div class="card-word" id="card-word">{{ data_word.0.word }}</div>
+                </div>
+                <div class="card-back">
+                    <div class="card-meaning" id="card-meaning">{{ data_word.0.meaning }}</div>
+                    <div class="card-example" id="card-example">{{ data_word.0.example }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flip-hint" id="flip-hint">Nhấn để xem nghĩa</div>
+
+        <div class="button-group">
+            <button class="btn-nav" id="btn-previous" disabled>Trước</button>
+            <button class="btn-learned" id="btn-learned">Đánh dấu đã học</button>
+            <button class="btn-nav" id="btn-next">Tiếp</button>
+        </div>
+
+        <button class="btn-shuffle" id="btn-shuffle">Xáo trộn thẻ</button>
+        <button class="btn-import" id="btn-import">Nhập từ Excel</button>
+        <form action="" method="POST">
+            {% csrf_token %}
+            <input type="file" id="excel-input" accept=".xlsx, .xls"  style="display: none;" enctype="multipart/form-data" action="/my/url/">
+        </form>
+        <div class="progress-section">
+            <div class="progress-title">Tiến độ học tập:</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-text" id="progress-text">0/{{ data_word|length }} từ đã học (0%)</div>
+        </div>
+        {% else %}
+        <div class="title">Flash Cards Tiếng Anh</div>
+        <div class="card-container">
+            <div class="card-inner" id="card-inner">
+                <div class="card-front">
+                    <div class="card-word" id="card-word">Hãy <a href="{%url 'login' %}">đăng nhập</a> để tự thêm tử mới của bạn vào FlashCard</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <style>
+        .hero {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 50px;
+            background-color:rgb(230, 230, 230);
+        }
+
+        .hero-content {
+            max-width: 500px;
+        }
+
+        .hero-content h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .hero-content p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .hero-image img {
+            max-width: 400px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+            padding-bottom: 150px;
+        }
+
+        .title {
+            margin-bottom: 24px;
+            margin-top: 24px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Phần card container */
+        .card-container {
+            width: 320px;
+            height: 192px;
+            perspective: 1000px;
+            margin-bottom: 10px;
+        }
+
+        /* Phần inner chứa cả mặt trước và mặt sau */
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        /* Hiệu ứng lật khi có class flipped */
+        .card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* Style chung cho cả mặt trước và mặt sau */
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Mặt trước (từ vựng) */
+        .card-front {
+            background-color: white;
+            border: 1px solid #e5e5e5;
+        }
+
+        /* Mặt sau (nghĩa và ví dụ) - quay 180 độ */
+        .card-back {
+            background-color: #2563eb;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .card-word {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .card-meaning {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .card-example {
+            font-size: 14px;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .flip-hint {
+            font-size: 14px;
+            margin-top: 8px;
+            color: #6b7280;
+        }
+
+        .button-group {
+            display: flex;
+            margin-top: 24px;
+            gap: 16px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-nav {
+            background-color: #e5e5e5;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background-color: #d5d5d5;
+        }
+
+        .btn-learned {
+            background-color: #e5e5e5;
+        }
+
+        .btn-learned.active {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        .btn-shuffle {
+            margin-top: 16px;
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-shuffle:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-import {
+            margin-top: 10px;
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .btn-import:hover {
+            background-color: #d97706;
+        }
+
+        .progress-section {
+            margin-top: 32px;
+            width: 320px;
+        }
+
+        .progress-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e5e5e5;
+            border-radius: 9999px;
+            height: 16px;
+        }
+
+        .progress-bar {
+            background-color: #22c55e;
+            height: 16px;
+            border-radius: 9999px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+    </style>
+
+    <script>
+        const initialCards = [
+            { id: 1, 
+                word: 'Nhấn vào "Nhập từ Excel" để chọn file excel của bạn', 
+                meaning: 'Nội dung file cần có 3 cột theo thứ tự: từ vựng,nghĩa,ví dụ', 
+                example: '' 
+            },
+        ];
+
+        let cards = [...initialCards];
+        let currentIndex = 0;
+        let flipped = false;
+        let learned = [];
+
+        // Các phần tử DOM
+        const cardInnerEl = document.getElementById('card-inner');
+        const cardWordEl = document.getElementById('card-word');
+        const cardMeaningEl = document.getElementById('card-meaning');
+        const cardExampleEl = document.getElementById('card-example');
+        const flipHintEl = document.getElementById('flip-hint');
+        const btnPrevious = document.getElementById('btn-previous');
+        const btnNext = document.getElementById('btn-next');
+        const btnLearned = document.getElementById('btn-learned');
+        const btnShuffle = document.getElementById('btn-shuffle');
+        const btnImport = document.getElementById('btn-import');
+        const excelInput = document.getElementById('excel-input');
+        const currentIndexEl = document.getElementById('current-index');
+        const totalCardsEl = document.getElementById('total-cards');
+        const progressBarEl = document.getElementById('progress-bar');
+        const progressTextEl = document.getElementById('progress-text');
+
+        // Hàm render card hiện tại
+        function renderCurrentCard() {
+            const currentCard = cards[currentIndex];
+
+            // Hiển thị số thẻ hiện tại và tổng số thẻ
+            currentIndexEl.textContent = currentIndex + 1;
+            totalCardsEl.textContent = cards.length;
+
+            // Cập nhật nội dung thẻ
+            cardWordEl.textContent = currentCard.word;
+            cardMeaningEl.textContent = currentCard.meaning;
+            cardExampleEl.textContent = currentCard.example;
+
+            // Cập nhật trạng thái lật thẻ và gợi ý
+            if (flipped) {
+                cardInnerEl.classList.add('flipped');
+                flipHintEl.textContent = 'Nhấn để xem từ';
+            } else {
+                cardInnerEl.classList.remove('flipped');
+                flipHintEl.textContent = 'Nhấn để xem nghĩa';
+            }
+
+            // Cập nhật trạng thái nút
+            btnPrevious.disabled = currentIndex === 0;
+            btnNext.disabled = currentIndex === cards.length - 1;
+
+            // Cập nhật trạng thái nút đã học
+            if (learned.includes(currentCard.id)) {
+                btnLearned.classList.add('active');
+                btnLearned.textContent = 'Đã học';
+            } else {
+                btnLearned.classList.remove('active');
+                btnLearned.textContent = 'Đánh dấu đã học';
+            }
+
+            // Cập nhật thanh tiến độ
+            updateProgressBar();
+        }
+
+        // Cập nhật thanh tiến độ
+        function updateProgressBar() {
+            const percentage = cards.length > 0 ? (learned.length / cards.length) * 100 : 0;
+            progressBarEl.style.width = `${percentage}%`;
+            progressTextEl.textContent = `${learned.length}/${cards.length} từ đã học (${Math.round(percentage)}%)`;
+        }
+
+        // Xử lý sự kiện lật thẻ
+        cardInnerEl.addEventListener('click', () => {
+            flipped = !flipped;
+            renderCurrentCard();
+        });
+
+        // Xử lý sự kiện nút trước
+        btnPrevious.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                flipped = false;
+                renderCurrentCard();
+            }
+        });
+
+        // Xử lý sự kiện nút tiếp
+        btnNext.addEventListener('click', () => {
+            if (currentIndex < cards.length - 1) {
+                currentIndex++;
+                flipped = false;
+                renderCurrentCard();
+            }
+        });
+
+        // Xử lý sự kiện đánh dấu đã học
+        btnLearned.addEventListener('click', () => {
+            const currentCard = cards[currentIndex];
+            if (learned.includes(currentCard.id)) {
+                learned = learned.filter(id => id !== currentCard.id);
+            } else {
+                learned.push(currentCard.id);
+            }
+            renderCurrentCard();
+        });
+
+        // Xử lý sự kiện xáo trộn thẻ
+        btnShuffle.addEventListener('click', () => {
+            cards = [...cards].sort(() => Math.random() - 0.5);
+            currentIndex = 0;
+            flipped = false;
+            renderCurrentCard();
+        });
+
+        // Xử lý sự kiện nhập Excel
+        btnImport.addEventListener('click', () => {
+            excelInput.click();
+        });
+
+        excelInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                // Chuyển đổi dữ liệu Excel
+                const importedCards = jsonData.slice(1).map((row, index) => ({
+                    id: index + 1,
+                    word: row[0] || '',
+                    meaning: row[1] || '',
+                    example: row[2] || ''
+                })).filter(card => card.word && card.meaning);
+
+                if (importedCards.length > 0) {
+                    cards = importedCards;
+                    currentIndex = 0;
+                    learned = [];
+                    flipped = false;
+                    renderCurrentCard();
+                    alert(`Đã nhập thành công ${importedCards.length} thẻ!`);
+                } else {
+                    alert('File không hợp lệ hoặc định dạng sai!');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Khởi tạo hiển thị ban đầu
+        totalCardsEl.textContent = cards.length;
+        renderCurrentCard();
+
+    </script>
+</body>
+{% endblock content %}

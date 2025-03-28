@@ -1,0 +1,69 @@
+{% load static %}
+{% load socialaccount %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Đăng nhập</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{% static 'app\css\login.css' %}">
+  <style>
+    .social-login a {
+      display: inline-flex;
+      align-items: center;
+      /* Vertically center the text and image */
+      justify-content: center;
+      /* Horizontally center the content */
+      gap: 5px;
+      /* Adjust the space between image and text */
+    }
+
+    .social-login img {
+      width: 20px;
+      /* Adjust image size as needed */
+      height: 20px;
+      /* Adjust image size as needed */
+      vertical-align: middle;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="english4all-text"><a href="{% url 'home' %}" style="text-decoration: none;">
+      English4All
+    </a></div>
+  <div class="container">
+    <h2>Đăng nhập</h2>
+    <form method="POST">
+      {% csrf_token %}
+      {% for message in messages %}
+      <p id="message" style="color: red; font-size: 15px;">{{message}}</p>
+      {% endfor %}
+      {{loginform.username}}
+      {{loginform.password}}
+      <input type="submit" class="btn" value="Đăng nhập">
+      <p>Hoặc đăng nhập bằng:</p>
+      <div class="social-login">
+        <a href="{% provider_login_url 'google' %}" style="text-decoration: none;">
+          <img src="{% static 'app\images\icons\Google.png' %}" alt="">
+          Google
+        </a>
+        <a href="{% provider_login_url 'github' %}" style="text-decoration: none;">
+          <img src="{% static 'app\images\icons\github.png' %}" alt="">
+          Github
+        </a>
+        <a href="{% provider_login_url 'facebook' %}" style="text-decoration: none;">
+          <img src="{% static 'app\images\icons\facebook.png' %}" alt="">
+          Facebook
+        </a>
+      </div>
+      <p>Bạn chưa có tài khoản? <a href="{% url 'register' %}" id="goToRegister">Đăng ký</a></p>
+    </form>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,465 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Thanh toán - {% endblock title %}
+{% block content %}
+
+<body>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Thanh toán</h1>
+            <p>Học tiếng Anh trực tuyến với các khóa học chất lượng cao, bài giảng thú vị và đội ngũ giáo viên tận tâm.
+            </p>
+            <a href="" class="btn">Khám phá ngay</a>
+        </div>
+        <div class="hero-image">
+            <img src="" alt="Người học tiếng Anh">
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="courses">
+        <h2>Khóa học cần thanh toán</h2>
+        <div class="course-list">
+            {% if items or bookitems %}
+                {% for item in items %}
+                <div class="course-item" id="course-a1"> <!-- Thêm ID cho khóa học -->
+                    <img src="{{item.course.ImageURL}}" alt="Khóa học B1">
+                    <h3 id="course_title">{{item.course.name}}</h3>
+                    <p>{{item.course.content}}</p>
+                    <p>Giá: <strong>{{item.course.price}} VNĐ</strong></p> <!-- Thêm giá khóa học -->
+                    <!-- Remove button -->
+                    <button class="remove-course-btn" data-item-id="{{ item.id }}">Xóa</button>
+                </div>
+                {% endfor %}
+                {% for item in bookitems %}
+                <div class="course-item" id="course-a1"> <!-- Thêm ID cho khóa học -->
+                    <img src="{{item.book.ImageURL}}" alt="Khóa học B1">
+                    <h3 id="course_title">{{item.book.name}}</h3>
+                    <p>{{item.book.content}}</p>
+                    <p>Giá: <strong>{{item.book.price}} VNĐ</strong></p> <!-- Thêm giá khóa học -->
+                    <!-- Remove button -->
+                    <button class="remove-book-btn" data-item-id="{{ item.id }}">Xóa</button>
+                </div>
+                {% endfor %}
+            {% else %}
+            <p><i>Khóa học và sách của bạn sẽ hiện tại đây!</i></p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Payment Section -->
+    <section id="payment" class="payment">
+        <h2 style="text-align: center;">Chi tiết thanh toán</h2>
+        <div class="payment-container">
+            <div class="invoice">
+                <h3>Hóa đơn</h3>
+                <div class="invoice-table-container">
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>Khóa học/Sách</th>
+                                <th>Giá</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>{{item.course.name}}</td>
+                                <td>{{item.course.price}} VNĐ</td>
+                                <td><button class="remove-invoice-course-btn" data-item-id="{{ item.id }}">Xóa</button></td>
+                            </tr>
+                            {% endfor %}
+                            {% for item in bookitems %}
+                            <tr>
+                                <td>{{item.book.name}}</td>
+                                <td>{{item.book.price}} VNĐ</td>
+                                <td><button class="remove-invoice-book-btn" data-item-id="{{ item.id }}">Xóa</button></td>
+                            </tr>
+                            {% endfor %}
+                            <!-- Thêm các khóa học đã chọn vào đây -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="total">
+                    <strong>Tổng cộng: {{total_cost}} VNĐ</strong>
+                </div>
+            </div>
+
+            <div class="payment-method">
+                <h3>Thanh toán qua VietQR</h3>
+                <p>Vui lòng nhập thông tin để tạo mã QR thanh toán:</p>
+
+                <form id="payment-form">
+
+                    <div>
+                        <label for="accountName">Tên tài khoản:</label> <!-- Added Username Section -->
+                        <input type="text" id="accountName" name="accountName" placeholder="Nhập tên của bạn"
+                            required>
+                    </div>
+
+                    <div>
+                        <label for="amount">Số tiền:</label>
+                        <input type="number" id="amount" name="amount" value="{{order.get_thanh_toan_total_int}}"
+                            readonly required>
+                    </div>
+
+                    <button type="button" id="generateQR">Tạo mã QR</button>
+                </form>
+
+                <div id="qr-code-container" style="display:none;">
+                    <p>Quét mã QR dưới đây để thanh toán:</p>
+                    <div class="qr-code">
+                        <img id="qr-code-image" src="" alt="VietQR Code">
+                    </div>
+                    <div class="bank-details">
+                        <p><span id="account-name-display"></span></p>
+                        <p><span id="bank-name-display"></span></p>
+                        <p><span id="account-number-display"></span></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#generateQR").click(function () {
+                var accountName = $("#accountName").val(); // Get username
+                var amount = $("#amount").val();
+
+                if (!accountName) {  // Added check for username
+                    alert("Vui lòng điền đầy đủ thông tin.");
+                    return;
+                }
+
+                // Encode the description to be URL-safe
+                // Add username to the description
+                var encodedDescription = encodeURIComponent(`${accountName} thanh toán khóa học`);
+
+                var bankCode = "970407";
+                var accountNumber = "23333666668888"
+                var compact = "compact2"
+                // Construct the VietQR image URL
+                var qrCodeUrl = `https://img.vietqr.io/image/techcombank-${accountNumber}-${compact}.jpg?amount=${amount}&addInfo=${encodedDescription}&accountName=${accountName}`;
+
+                // Set the QR code image source
+                $("#qr-code-image").attr("src", qrCodeUrl);
+
+                // Show the QR code container
+                $("#qr-code-container").show();
+            });
+
+            $(".remove-course-btn").click(function () {
+                const itemId = $(this).data("item-id");
+
+                $.ajax({
+                    url: '/remove_course/',  // URL to remove_course view
+                    type: 'POST',
+                    data: {
+                        'item_id': itemId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Important for CSRF protection
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            // Reload the page to update the course list
+                            alert("Khóa học đã được xóa")
+                            location.reload();
+                        } else {
+                            alert('Có lỗi xảy ra khi xóa khóa học.');
+                        }
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra khi gửi yêu cầu.');
+                    }
+                });
+            });
+            $(".remove-book-btn").click(function () {
+                const itemId = $(this).data("item-id");
+
+                $.ajax({
+                    url: '/remove_book/',  // URL to remove_course view
+                    type: 'POST',
+                    data: {
+                        'item_id': itemId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Important for CSRF protection
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            // Reload the page to update the course list
+
+                            alert("Sách đã được xóa")
+                            location.reload();
+                        } else {
+                            alert('Có lỗi xảy ra khi xóa khóa học.');
+                        }
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra khi gửi yêu cầu.');
+                    }
+                });
+            });
+            // Remove course button click handler in invoice
+            $(".remove-invoice-course-btn").click(function () {
+                const itemId = $(this).data("item-id");
+
+                $.ajax({
+                    url: '/remove_course/',  // URL to remove_course view
+                    type: 'POST',
+                    data: {
+                        'item_id': itemId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Important for CSRF protection
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            // Reload the page to update the course list
+                            alert("Khóa học đã được xóa")
+                            location.reload();
+                        } else {
+                            alert('Có lỗi xảy ra khi xóa khóa học.');
+                        }
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra khi gửi yêu cầu.');
+                    }
+                });
+            });
+            $(".remove-invoice-book-btn").click(function () {
+                const itemId = $(this).data("item-id");
+
+                $.ajax({
+                    url: '/remove_book/',  // URL to remove_course view
+                    type: 'POST',
+                    data: {
+                        'item_id': itemId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Important for CSRF protection
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            // Reload the page to update the course list
+                            alert("Sách đã được xóa")
+                            location.reload();
+                        } else {
+                            alert('Có lỗi xảy ra khi xóa khóa học.');
+                        }
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra khi gửi yêu cầu.');
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+        /* Payment Section */
+        .payment-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            /* Hoặc space-around, flex-start tùy theo ý thích */
+        }
+
+        .invoice,
+        .payment-method {
+            flex: 1 1 300px;
+            /* Chiếm ít nhất 300px, có thể lớn hơn nếu có chỗ */
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .invoice h3,
+        .payment-method h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .invoice-table-container {
+            overflow-x: auto;
+            /* Thêm thanh cuộn ngang nếu bảng quá rộng */
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .invoice-table th,
+        .invoice-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .invoice-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .total {
+            margin-top: 15px;
+            font-size: 1.1em;
+            text-align: right;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .qr-code img {
+            max-width: 500px;
+            /* Tăng kích thước tối đa */
+            max-height: 500px;
+            /* Tăng kích thước tối đa (nếu cần) */
+            border: 1px solid #eee;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: white;
+        }
+
+        .bank-details p {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .important-note {
+            font-style: italic;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .payment-container {
+                flex-direction: column;
+                /* Stack on smaller screens */
+            }
+
+            .invoice,
+            .payment-method {
+                width: 100%;
+                /* Full width on smaller screens */
+            }
+        }
+
+        /* Payment Form */
+        #payment-form div {
+            margin-bottom: 10px;
+        }
+
+        #payment-form label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        #payment-form input[type="text"],
+        #payment-form input[type="number"],
+        #payment-form select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            /* Important: Include padding and border in the element's total width and height */
+        }
+
+        #payment-form input[readonly] {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        #payment-form button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #payment-form button:hover {
+            background-color: #3e8e41;
+        }
+
+        #qr-code-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        /* Style for the remove button */
+        .remove-course-btn {
+            background-color: #f44336;
+            /* Red color */
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .remove-course-btn:hover {
+            background-color: #d32f2f;
+            /* Darker red on hover */
+        }
+
+        .remove-book-btn {
+            background-color: #f44336;
+            /* Red color */
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .remove-book-btn:hover {
+            background-color: #d32f2f;
+            /* Darker red on hover */
+        }
+        /* Style for the remove button in invoice */
+        .remove-invoice-course-btn {
+            background-color: #f44336;
+            /* Red color */
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .remove-invoice-course-btn:hover {
+            background-color: #d32f2f;
+            /* Darker red on hover */
+        }
+
+        .remove-invoice-book-btn {
+            background-color: #f44336;
+            /* Red color */
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .remove-invoice-book-btn:hover {
+            background-color: #d32f2f;
+            /* Darker red on hover */
+        }
+    </style>
+    {% endblock content %}

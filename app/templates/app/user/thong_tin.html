@@ -1,0 +1,142 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block title %}Thông tin - {% endblock title %}
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Thông tin cá nhân</h1>
+        <p>Học tiếng Anh trực tuyến với các khóa học chất lượng cao, bài giảng thú vị và đội ngũ giáo viên tận tâm.
+        </p>
+    </div>
+    <div class="hero-image">
+        <img src="{% static 'app\img\z.jpg' %}" alt="Người học tiếng Anh">
+    </div>
+</section>
+<style>
+    .profile-container {
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .profile-row {
+        display: flex;
+        /* Flexbox layout */
+        align-items: center;
+        /* Vertically center items */
+        margin-bottom: 20px;
+    }
+
+    .profile-image {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        /* Make it a circle */
+        object-fit: cover;
+        /* Ensure image fills the container without distortion */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        margin-right: 30px;
+        /* Space between image and text */
+    }
+
+    .profile-info {
+        flex: 1;
+        /* Take up remaining space */
+    }
+
+    .profile-info p {
+        margin-bottom: 8px;
+        font-size: 1.1rem;
+        color: #555;
+    }
+
+    .profile-actions {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .update-profile-button {
+        background-color: #007bff;
+        color: #fff;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .update-profile-button:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>Thông tin</h1>
+    </div>
+
+    <div class="profile-row">
+        <div class="profile-info">
+            <p><strong>Họ:</strong> {{ user.first_name }}</p>
+            <p><strong>Tên:</strong> {{ user.last_name }}</p>
+            <p><strong>Tên đăng nhập:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+        </div>
+    </div>
+
+    <div class="profile-actions">
+        <a href="{% url 'cap_nhat_thong_tin' %}" class="update-profile-button">Chỉnh sửa</a>
+    </div>
+    <div class="profile-actions">
+        <a href="{% url 'thay_doi_mat_khau' %}" class="update-profile-button">Đổi mật khẩu</a>
+    </div>
+</div>
+<section id="courses" class="courses">
+    <h2>Thống kê số điểm</h2>
+    <img src="data:image/png;base64,{{ graphic }}">
+</section>
+<section id="courses" class="courses">
+    <h2>Các khóa học đã tham gia</h2>
+    <div class="giao_vien-list">
+        <!-- Các khóa học sẽ được thêm vào đây (ví dụ) -->
+        <div class="giao_vien-item" id="giao_vien-a1"> <!-- Thêm ID cho khóa học -->
+            <img src="{% static 'app/images/photo/Toeic/toeic1.png' %}" alt="Khóa học A1">
+            <h3>Khóa học Toeic 0-300+</h3>
+            <h4>Cấp độ: Cơ bản</h4>
+            <p>Khóa học cơ bản giúp bạn làm quen với tiếng Anh và xây dựng nền tảng vững chắc.</p>
+            <button class="btn view-course-details" data-course-id="TiengAnhGiaoTiep">Xem chi tiết</button>
+        </div>
+
+        <div class="giao_vien-item" id="giao_vien-a1"> <!-- Thêm ID cho khóa học -->
+            <img src="{% static 'app/images/photo/Toeic/toeic2.png' %}" alt="Khóa học A1">
+            <h3>Khóa học Toeic 450-600+</h3>
+            <h4>Cấp độ: Trung bình</h4>
+            <p>Khóa học cơ bản giúp bạn làm quen với tiếng Anh và xây dựng nền tảng vững chắc.</p>
+            <button class="btn view-course-details" data-course-id="TiengAnhGiaoTiep">Xem chi tiết</button>
+            <!-- Thay 'a1' bằng ID khóa học thực tế -->
+        </div>
+
+        <div class="giao_vien-item" id="giao_vien-a1"> <!-- Thêm ID cho khóa học -->
+            <img src="{% static 'app/images/photo/Toeic/toeic3.png' %}" alt="Khóa học A1">
+            <h3>Khóa học Toeic 730+</h3>
+            <h4>Cấp độ: Nâng cao</h4>
+            <p>Khóa học cơ bản giúp bạn làm quen với tiếng Anh và xây dựng nền tảng vững chắc.</p>
+            <button class="btn view-course-details" data-course-id="TiengAnhGiaoTiep">Xem chi tiết</button>
+            <!-- Thay 'a1' bằng ID khóa học thực tế -->
+        </div>
+
+        <!-- Thêm các khóa học khác vào đây -->
+    </div>
+</section>
+
+{% endblock content %}
