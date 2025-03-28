@@ -10,8 +10,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="{% static 'app\css\login.css' %}">
+  <link rel="stylesheet" href="{% static 'app/css/login.css' %}">
+  <link rel="icon" type="image/x-icon" href="{% static 'app/images/icons/logo.png' %}">
   <style>
+    body{
+      background-image: url("{% static 'app/images/bglogin.jpg' %}");
+      background-size: cover; /* Optional: Make the image cover the entire background */
+      background-repeat: no-repeat; /* Optional: Prevent the image from repeating */
+    }
     .social-login a {
       display: inline-flex;
       align-items: center;
@@ -49,15 +55,15 @@
       <p>Hoặc đăng nhập bằng:</p>
       <div class="social-login">
         <a href="{% provider_login_url 'google' %}" style="text-decoration: none;">
-          <img src="{% static 'app\images\icons\Google.png' %}" alt="">
+          <img src="{% static 'app/images/icons/Google.png' %}" alt="">
           Google
         </a>
         <a href="{% provider_login_url 'github' %}" style="text-decoration: none;">
-          <img src="{% static 'app\images\icons\github.png' %}" alt="">
+          <img src="{% static 'app/images/icons/github.png' %}" alt="">
           Github
         </a>
         <a href="{% provider_login_url 'facebook' %}" style="text-decoration: none;">
-          <img src="{% static 'app\images\icons\facebook.png' %}" alt="">
+          <img src="{% static 'app/images/icons/facebook.png' %}" alt="">
           Facebook
         </a>
       </div>

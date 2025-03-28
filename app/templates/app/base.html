@@ -281,6 +281,7 @@
                 <!-- Messages will be appended here -->
             </div>
             <form method="POST" id="chat-form" class="flex w-full">
+                {% csrf_token %}
                 <div id="chatbot-input-area">
                     <input type="text" id="user-input" placeholder="Type your message...">
                     <button id="send-button"><i class="fa fa-paper-plane"></i></button>
@@ -811,7 +812,7 @@
             }
         }
     </script>
-    <script src="{% static 'app/js/thanh_toan.js' %}"></script>
+    <script src="{% static 'app/js/payment.js' %}"></script>
 </body>
 
 </html>

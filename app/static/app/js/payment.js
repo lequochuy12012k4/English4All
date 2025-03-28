@@ -45,9 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const courseId = this.dataset.course;
             const action = this.dataset.action;
 
-            if (user === "AnonymousUser") {
-                alert('You need to log in to add courses to your cart.');
-            } else {
+            if (user !== "AnonymousUser") {
                 updateItem(courseId, action, 'course');
             }
         });
@@ -59,9 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const bookId = this.dataset.book;
             const action = this.dataset.action;
             
-            if (user === "AnonymousUser") {
-                alert('You need to log in to add books to your cart.');
-            } else {
+            if (user !== "AnonymousUser") {
                 updateItem(bookId, action, 'book');
             }
         });

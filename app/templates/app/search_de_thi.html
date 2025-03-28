@@ -315,7 +315,31 @@
             /* Bring the active slide into view */
         }
     </style>
-    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <h2>Thông tin đăng ký</h2>
+        <form method="POST" action="" onsubmit="return showRegistrationAlert()">
+            {% csrf_token %}
+            <input type="text" placeholder="Họ và tên" name="full_name">
+            <input type="email" placeholder="Email của bạn" name="email">
+            <input type="text" placeholder="Số điện thoại" name = "phone_number">
+            <input type="text" placeholder="Trường học" name="school">
+            <input list="loai_chung_chi" placeholder="Loại chứng chỉ" name="certificate">
+            <datalist id="loai_chung_chi">
+                <option value="TOEIC"></option>
+                <option value="IELTS"></option>
+                <option value="APTIS"></option>
+            </datalist>
+            <input type="number" placeholder="Mục tiêu" name="target">
+            <input type="submit" class="btn" value="Đăng ký ngay"></input>
+        </form>
+        <script>
+            function showRegistrationAlert() {
+                alert("Thông tin đăng ký đã được gửi vào gmail của bạn!");
+                return true; // Allow the form to submit
+            }
+        </script>
+    </section>
+    
     <section id="contact" class="contact_info">
         <h2 id="contact_info" class="contact_info_title" style="text-align: center; padding-top: 15px;">Thông tin liên
             hệ </h2>
@@ -359,7 +383,6 @@
                 width: 100px;
             }
         </style>
-        </head>
 
         <body>
 
@@ -440,26 +463,6 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <h2>Thông tin đăng ký</h2>
-        <form>
-            <input type="text" placeholder="Họ và tên">
-            <input type="email" placeholder="Email của bạn">
-            <input type="text" placeholder="Số điện thoại">
-            <input type="text" placeholder="Trường học">
-            <input list="loai_chung_chi" placeholder="Loại chứng chỉ">
-            <datalist id="loai_chung_chi">
-                <option value="TOEIC"></option>
-                <option value="IELTS"></option>
-                <option value="APTIS"></option>
-            </datalist>
-            <input type="number" placeholder="Mục tiêu">
-            <button type="submit" class="btn">Đăng ký ngay</button>
-        </form>
-    </section>
-
-    </html>
-
 
     <script src="{% static 'app/js/home.js' %}"></script>
     <script>
