@@ -5,6 +5,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="English4All">  <!-- You may want to declare it in subclass!  -->
+    <meta property="og:description"
+        content="Nâng cao trình độ tiếng Anh của bạn một cách dễ dàng với English4All!">
+    <meta property="og:image" content="{% static 'app/images/icons/logo.png' %}">
+    <!-- Replace with your desired image URL -->
+    <meta property="og:url" content="https://english4all.onrender.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="English4All">
+
+    <!-- Twitter Card Meta Tags (Optional) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="English4All">
+    <meta name="twitter:description"
+        content="Nâng cao trình độ tiếng Anh của bạn một cách dễ dàng với English4All!">
+    <meta name="twitter:image" content="{% static 'app/images/icons/logo.png' %}">
     <title>{% block title %}{% endblock %}English4All</title>
     <link rel="stylesheet" href="{% static 'app\css\base.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
