@@ -1,0 +1,597 @@
+/* style.css */
+
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition:  0.3s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Header Styles */
+header {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 17px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.logo a {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    color: #333;
+    transition: 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #007bff;
+}
+
+.auth {
+    /* NEW POSITIONING */
+    position: absolute; /* Take it out of the flow */
+    top: 50%;           /* Vertically center */
+    transform: translateY(-50%); /* Correct vertical centering */
+    right: 50px;        /* 50px from the right edge */
+    display: flex;       /* Arrange buttons horizontally */
+    align-items: center; /* Vertically align buttons */
+
+}
+
+.auth a {
+    margin-left: 20px;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 1px solid #000000;
+    color: #000000;
+    transition: all 0.3s ease;
+}
+
+.auth a:hover {
+    background-color: #000000;
+    color: #fff;
+}
+
+/* Hero Section Styles */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 50px 20px;
+    background-color: #e9ecef;
+}
+
+.hero-content {
+    max-width: 600px;
+}
+
+.hero-content h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.hero-content p {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.hero-image img {
+    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Courses Section Styles */
+.courses {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.courses h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.course-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.course-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: left;
+    width: 300px;
+}
+
+.course-item img {
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.course-item h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.course-item p {
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+/* Testimonials Section Styles */
+.testimonials {
+    padding: 50px 20px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.testimonials h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.testimonial-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.testimonial-item {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+    width: 400px;
+}
+
+.testimonial-item p {
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+/* Contact Section Styles */
+.contact {
+    padding: 50px 20px;
+    background-color: #e9ecef;
+    text-align: center;
+}
+
+.contact h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.contact form {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.contact input,
+.contact textarea {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.contact textarea {
+    height: 150px;
+}
+
+/* Footer Styles */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    /* Could be more or less, depending on screen size */
+    max-width: 500px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal input {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+
+/*Basic Styling for the Link */
+.trang_chu {
+    position: relative;
+    display: inline-block;
+}
+
+/* Style the Sub-Menu (Dropdown) */
+.trang_chu .sub-menu {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 10px;
+    min-width: 150px;
+    display: none;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 15px;
+    text-transform: none;
+}
+
+/* Style the Sub-Menu Items */
+.trang_chu .sub-menu li {
+    list-style: none;
+    margin: 0;
+    padding: 5px 0;
+}
+
+.trang_chu .sub-menu li a {
+    display: block;
+    color: #333;
+    text-decoration: none;
+    padding: 8px 12px;
+    /* Add padding to the links within the dropdown */
+}
+
+/* Style the hover effect for Sub-Menu Items */
+.trang_chu .sub-menu li a:hover {
+    color: #007bff;
+    background-color: #eee;
+    /* Add a background color on hover for better visibility */
+}
+
+/* Show the Sub-Menu on Hover */
+nav ul li.trang_chu:hover .sub-menu {
+    /* Target the li with the class trang_chu on hover */
+    display: block;
+}
+
+
+.test_online {
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 1px solid #007bff;
+    color: #ffffff;
+    transition: all 0.3s ease;
+    background-color: #007bff;
+    
+}
+
+/* Add this CSS rule */
+.trang_chu:hover {
+    color: #0056b3;
+    /* Or any color you prefer */
+    border-bottom: 4px solid #0056b3;
+    border-radius: 3px;
+    /* Creates the underline border */
+    padding-bottom: 4px;
+    /* Adjust to match border thickness */
+    transition: border-bottom;
+    /* Smooth transition */
+}
+
+.khoa_hoc:hover {
+    color: #0056b3;
+    /* Or any color you prefer */
+    border-bottom: 4px solid #0056b3;
+    border-radius: 3px;
+    /* Creates the underline border */
+    padding-bottom: 4px;
+    /* Adjust to match border thickness */
+    transition: border-bottom;
+    /* Smooth transition */
+}
+
+.tai_lieu:hover {
+    color: #0056b3;
+    /* Or any color you prefer */
+    border-bottom: 4px solid #0056b3;
+    border-radius: 3px;
+    /* Creates the underline border */
+    padding-bottom: 4px;
+    /* Adjust to match border thickness */
+    transition: border-bottom;
+    /* Smooth transition */
+}
+
+.giao_vien_header:hover {
+    color: #0056b3;
+    /* Or any color you prefer */
+    border-bottom: 4px solid #0056b3;
+    border-radius: 3px;
+    /* Creates the underline border */
+    padding-bottom: 4px;
+    /* Adjust to match border thickness */
+    transition: border-bottom;
+    /* Smooth transition */
+}
+
+.test_online:hover {
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 1px solid #ffffff;
+    color: #007bff;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+    border-color: #007bff;
+}
+
+.lien_he:hover {
+    color: #0056b3;
+    /* Or any color you prefer */
+    border-bottom: 4px solid #0056b3;
+    border-radius: 3px;
+    /* Creates the underline border */
+    padding-bottom: 4px;
+    /* Adjust to match border thickness */
+    transition: border-bottom;
+    /* Smooth transition */
+}
+
+.khoa_hoc {
+    position: relative;
+    display: inline-block;
+}
+
+/* Style the Sub-Menu (Dropdown) */
+.khoa_hoc .sub-menu {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /* padding: 5px 10px; */
+    min-width: 60px;
+    display: none;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 15px;
+    text-transform: none;
+}
+
+/* Style the Sub-Menu Items */
+.khoa_hoc .sub-menu li {
+    list-style: none;
+    margin: 0;
+    padding: 0px 0;
+}
+
+.khoa_hoc .sub-menu li a {
+    display: block;
+    color: #333;
+    text-decoration: none;
+    padding: 8px 5px ;
+    /* Add padding to the links within the dropdown */
+}
+
+/* Style the hover effect for Sub-Menu Items */
+.khoa_hoc .sub-menu li a:hover {
+    color: #007bff;
+    background-color: #eee;
+    /* Add a background color on hover for better visibility */
+}
+
+/* Show the Sub-Menu on Hover */
+nav ul li.khoa_hoc:hover .sub-menu {
+    /* Target the li with the class khoa_hoc on hover */
+    display: block;
+}
+
+/* Courses Section Styles */
+.giao_vien {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.giao_vien h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.giao_vien-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.giao_vien-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: left;
+    width: 300px;
+}
+
+.giao_vien-item img {
+    width: 100%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.giao_vien-item h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.user {
+    position: relative;
+    display: inline-block;
+    right: 150px;
+    
+}
+
+/* Style the Sub-Menu (Dropdown) */
+.user .sub-menu {
+    position: absolute;
+    top: 30px;
+    left: -30px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 10px;
+    min-width: 150px;
+    display: none;
+    z-index: 1;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 15px;
+    text-transform: none;
+}
+
+/* Style the Sub-Menu Items */
+.user .sub-menu li {
+    list-style: none;
+    margin: 0;
+    padding: 5px 0;
+}
+
+.user .sub-menu li a {
+    display: block;
+    color: #333;
+    text-decoration: none;
+    padding: 8px 12px;
+    /* Add padding to the links within the dropdown */
+}
+
+/* Style the hover effect for Sub-Menu Items */
+.user .sub-menu li a:hover {
+    color: #007bff;
+    background-color: #eee;
+    /* Add a background color on hover for better visibility */
+}
+
+/* Show the Sub-Menu on Hover */
+nav ul li.user:hover .sub-menu {
+    /* Target the li with the class user on hover */
+    display: block;
+}
+.user:hover {
+    color: #0056b3;
+    /* Or any color you prefer */
+    border-bottom: 4px solid #0056b3;
+    border-radius: 3px;
+    /* Creates the underline border */
+    padding-bottom: 4px;
+    /* Adjust to match border thickness */
+    transition: border-bottom;
+    /* Smooth transition */
+}
+.test_online_header {
+    margin-left: auto;
+    margin-right: auto;
+}

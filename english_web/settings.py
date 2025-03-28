@@ -87,6 +87,7 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'english_web.urls'
@@ -162,10 +163,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'app/static/'
+STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'app/static',  # Adjust this path if necessary
 ]
+STATIC_ROOT = BASE_DIR / 'productionfiles'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
