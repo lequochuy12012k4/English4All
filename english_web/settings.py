@@ -127,7 +127,7 @@ DATABASES = {
     #     'PORT':'49047'
     # }
 }
-DATABASES['default'] = dj_database_url.parse(os.environ.get('DB_URL'))
+DATABASES['default'] = dj_database_url.parse(os.environ.get('postgresql://english4all_zeog_user:1PSYBK1o05gyFLrauN9RImkgO5LTcGam@dpg-cvjsg99r0fns739jor10-a.singapore-postgres.render.com/english4all_zeog'))
 # database_url = os.environ.get("DATABASE_URL")
 # DATABASES['default'] = dj_database_url.parse(database_url)
 # Password validation
