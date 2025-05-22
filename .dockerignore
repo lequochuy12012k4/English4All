@@ -1,0 +1,32 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+*.egg-info/
+.idea/
+.vscode/
+
+# Databases
+*.sqlite3
+db.sqlite3 
+# (Nếu bạn không muốn DB development vào image)
+
+# Static & Media (nếu được quản lý bởi volume hoặc CDN)
+# staticfiles/ 
+# mediafiles/ 
+
+# Docker
+Dockerfile
+docker-compose.yml 
+# (Nếu bạn không muốn chúng tự copy vào image, mặc dù thường không sao)
+
+# OS specific
+.DS_Store
+Thumbs.db
