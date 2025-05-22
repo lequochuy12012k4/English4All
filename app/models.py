@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm, PasswordChangeForm, PasswordResetForm
 from django import forms  
 from django.forms.widgets import PasswordInput, TextInput
 
@@ -297,3 +297,13 @@ class Chatbot_message(models.Model):
 
     def __str__(self):
         return self.message
+
+class PasswordResetRequestForm(PasswordResetForm): # Kế thừa để giữ nguyên logic của Django
+    email = forms.EmailField(
+        label="",
+        widget=forms.EmailInput(attrs={
+            'placeholder': 'Địa chỉ Email của bạn',
+            'autocomplete': 'email',
+            'class': 'form-control email-input' # Class bạn đã style
+        })
+    )

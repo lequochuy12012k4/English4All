@@ -49,25 +49,26 @@
       {{loginform.username}}
       {{loginform.password}}
       <input type="submit" class="btn" value="Đăng nhập">
+      <p style="text-align: right; margin-top: 5px;"><a href="{% url 'password_forget' %}" style="text-decoration: none; font-size: 0.9em;">Quên mật khẩu?</a></p>
       <p>Hoặc đăng nhập bằng:</p>
       <div class="social-login">
         <a href="{% provider_login_url 'google' %}" style="text-decoration: none;">
-          <img src="{% static 'app/images/icons/Google.png' %}" alt="">
+          <img src="{% static 'app/images/icons/Google.png' %}" alt="Google">
           Google
         </a>
         <a href="{% provider_login_url 'github' %}" style="text-decoration: none;">
-          <img src="{% static 'app/images/icons/github.png' %}" alt="">
+          <img src="{% static 'app/images/icons/github.png' %}" alt="Github">
           Github
         </a>
         <a href="{% provider_login_url 'facebook' %}" style="text-decoration: none;">
-          <img src="{% static 'app/images/icons/facebook.png' %}" alt="">
+          <img src="{% static 'app/images/icons/facebook.png' %}" alt="Facebook">
           Facebook
         </a>
       </div>
       <p>Bạn chưa có tài khoản? <a href="{% url 'register' %}" id="goToRegister">Đăng ký</a></p>
     </form>
   </div>
-  
+
 </body>
 
 </html>

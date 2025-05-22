@@ -202,6 +202,11 @@ def LoginPage(request):
                 messages.info(request,"Tên đăng nhập hoặc mật khẩu chưa chính xác")
     return render(request, 'app/login.html', context)
 
+def Password_forget(request):
+    form = PasswordResetRequestForm()
+    context = {'form':form}
+    return render(request,'app/password_forget.html', context)
+
 def LogoutPage(request):
     logout(request)
     response = redirect('home')
