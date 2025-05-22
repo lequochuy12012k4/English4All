@@ -46,9 +46,6 @@
     <h2>Đăng nhập</h2>
     <form method="POST">
       {% csrf_token %}
-      {% for message in messages %}
-      <p id="message" style="color: red; font-size: 15px;">{{message}}</p>
-      {% endfor %}
       {{loginform.username}}
       {{loginform.password}}
       <input type="submit" class="btn" value="Đăng nhập">
