@@ -15,7 +15,7 @@ urlpatterns = [
     path('thanh_toan/', views.Thanh_toan, name="thanh_toan"),
     path('course/mua_khoa_hoc/', views.Mua_khoa_hoc, name="mua_khoa_hoc"),
     path('sach/mua_sach/', views.Mua_sach, name="mua_sach"),
-    path('test_online/',views.Test_onlinePage, name="test_online"),
+    path('tests/', views.list_tests_view, name='test'),
     path('vinh_danh/', views.Vinh_danhPage, name="vinh_danh"),
     path('course/', views.Khoa_hoc, name="course"),
     path('lo_trinh/', views.Lo_trinhPage, name="lo_trinh"),
@@ -55,4 +55,7 @@ urlpatterns = [
              template_name='app/password_reset_complete.html' # Trang thông báo đổi mk thành công
          ),
          name='password_reset_complete'),
+    path('test/<int:test_id>/', views.take_test_view, name='take_test'),
+    path('test/submit/<int:attempt_id>/', views.submit_test_view, name='submit_test'),
+    path('test/result/<int:attempt_id>/', views.test_result_view, name='test_result_url_name'),
 ]

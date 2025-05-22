@@ -307,3 +307,75 @@ class PasswordResetRequestForm(PasswordResetForm): # Kế thừa để giữ ngu
             'class': 'form-control email-input' # Class bạn đã style
         })
     )
+
+class Test(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Tiêu đề bài test")
+    description = models.TextField(blank=True, null=True, verbose_name="Mô tả")
+    time_limit_minutes = models.PositiveIntegerField(default=30, verbose_name="Thời gian làm bài (phút)")
+    created_at = models.DateTimeField(auto_now_add=True)
+    # Có thể thêm: is_active, scheduled_time, etc.
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Bài Test"
+        verbose_name_plural = "Các Bài Test"
+
+class Question(models.Model):
+    test = models.ForeignKey(Test, related_name='questions', on_delete=models.CASCADE, verbose_name="Bài Test")
+    text = models.TextField(verbose_name="Nội dung câu hỏi")
+    # Có thể thêm: question_type (trắc nghiệm, điền từ), points, image, audio
+    order = models.PositiveIntegerField(default=0, verbose_name="Thứ tự") # Để sắp xếp câu hỏi
+
+    def __str__(self):
+        return f"Câu {self.order}: {self.text[:50]}... (Test: {self.test.title})"
+
+    class Meta:
+        ordering = ['order', 'id'] # Sắp xếp theo thứ tự, rồi đến ID
+        verbose_name = "Câu Hỏi"
+        verbose_name_plural = "Các Câu Hỏi"
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE, verbose_name="Câu Hỏi")
+    text = models.CharField(max_length=255, verbose_name="Nội dung lựa chọn") # Chỉ chứa nội dung, ví dụ "Paris"
+    is_correct = models.BooleanField(default=False, verbose_name="Là đáp án đúng")
+    # (Không cần trường order ở đây, vì Django admin inline có cơ chế sắp xếp)
+
+    def __str__(self):
+        return self.text # Hoặc bạn có thể tùy chỉnh __str__ nếu muốn
+
+    class Meta:
+        verbose_name = "Lựa Chọn"
+        verbose_name_plural = "Các Lựa Chọn"
+        ordering = ['id'] # Hoặc một trường order nếu bạn thêm vào (nhưng admin inline tự xử lý thứ tự)
+
+class TestAttempt(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Người dùng")
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name="Bài Test")
+    start_time = models.DateTimeField(auto_now_add=True, verbose_name="Thời gian bắt đầu")
+    end_time = models.DateTimeField(null=True, blank=True, verbose_name="Thời gian kết thúc")
+    score = models.FloatField(null=True, blank=True, verbose_name="Điểm số") # Có thể là % hoặc số câu đúng
+    completed = models.BooleanField(default=False, verbose_name="Hoàn thành")
+    correct_answers_count = models.PositiveIntegerField(null=True, blank=True, verbose_name="Số câu đúng")
+    total_questions_at_submission = models.PositiveIntegerField(null=True, blank=True, verbose_name="Tổng số câu khi nộp")
+    def __str__(self):
+        return f"{self.user.username} - {self.test.title} (Điểm: {self.score})"
+
+    class Meta:
+        verbose_name = "Lần Làm Test"
+        verbose_name_plural = "Các Lần Làm Test"
+
+class UserAnswer(models.Model):
+    attempt = models.ForeignKey(TestAttempt, related_name='answers', on_delete=models.CASCADE, verbose_name="Lần làm test")
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name="Câu Hỏi")
+    selected_choice = models.ForeignKey(Choice, on_delete=models.CASCADE, verbose_name="Lựa chọn đã chọn")
+    # Có thể thêm: is_correct_at_time_of_answer (nếu đáp án có thể thay đổi)
+
+    def __str__(self):
+        return f"Trả lời cho câu {self.question.id} trong lần làm {self.attempt.id}"
+
+    class Meta:
+        unique_together = ('attempt', 'question') # Mỗi câu hỏi chỉ được trả lời 1 lần trong 1 attempt
+        verbose_name = "Câu Trả Lời Của Người Dùng"
+        verbose_name_plural = "Các Câu Trả Lời Của Người Dùng"

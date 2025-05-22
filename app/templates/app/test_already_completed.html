@@ -1,0 +1,44 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Bài test đã hoàn thành{% endblock %}
+
+{% block head_extra %}
+  <link rel="stylesheet" href="{% static 'app/css/login.css' %}">
+  <style>
+    /* (Copy style tương tự như test_result.html hoặc tạo style chung) */
+    body {
+      background-image: url("{% static 'app/images/bglogin.jpg' %}");
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+    .message-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .message-container h1 { color: #333; margin-bottom: 20px; }
+    .message-container p { color: #555; font-size: 1.1em; margin-bottom: 20px; }
+    .message-container a { display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="english4all-text" style="position: absolute; top: 15px; left: 15px; font-size: 1.5em; z-index:10;">
+    <a href="{% url 'home' %}" style="text-decoration: none; color:#007bff; background-color: rgba(255,255,255,0.7); padding: 5px 10px; border-radius:5px;">
+      English4All
+    </a>
+</div>
+
+<div class="message-container">
+  <h1>Bài test đã được hoàn thành</h1>
+  <p>Bạn đã hoàn thành bài test "<strong>{{ attempt.test.title }}</strong>" vào lúc {{ attempt.end_time }}.</p>
+  <p>Điểm số của bạn là: <strong>{{ attempt.score|floatformat:2 }}%</strong>.</p>
+  <a href="{% url 'test_result_url_name' attempt_id=attempt.id %}">Xem lại kết quả</a>
+  <a href="{% url 'home' %}" style="margin-left:10px; background-color: #6c757d;">Quay về Trang chủ</a>
+</div>
+{% endblock %}

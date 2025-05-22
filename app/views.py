@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse,HttpResponseForbidden
 from django.contrib.auth.models import *
 from .models import *
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login,logout,authenticate
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
@@ -11,12 +12,15 @@ import google.generativeai as genai
 from django.conf import settings
 import logging
 import json
+from django.utils import timezone
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from english_web.settings import EMAIL_HOST_USER
 from django.core.mail import EmailMultiAlternatives
 from django.core import serializers
 from datetime import *
+from django.db import transaction
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -375,15 +379,121 @@ def Gioi_thieuPage(request):
     context = {'thanh_toan_items': thanh_toan_items,'user_not_login':user_not_login,'user_login':user_login}
     return render(request,'app/gioi_thieu.html',context)
 
-def Test_onlinePage(request):
+# app/views.py
+from django.shortcuts import render
+from .models import Test # Đảm bảo import Test
+# ... (các import khác) ...
+
+def list_tests_view(request):
+    # Kiểm tra đăng nhập và chuẩn bị context user_login/user_not_login (nếu cần cho template này)
     if request.user.is_authenticated:
         user_not_login = "hidden"
         user_login = "show"
     else:
         user_not_login = "show"
         user_login = "hidden"
-    context = {'user_not_login':user_not_login,'user_login':user_login}
-    return render(request,'app/test_online.html',context)
+    
+    all_tests = Test.objects.all() # Lấy tất cả các bài test
+    # Bạn có thể filter thêm ở đây, ví dụ: Test.objects.filter(is_active=True)
+
+    context = {
+        'tests': all_tests,
+        'user_not_login': user_not_login,
+        'user_login': user_login,
+        # Thêm bất kỳ context nào khác mà trang list_tests.html của bạn cần
+    }
+    return render(request, 'app/list_tests.html', context) # Render template mới này
+
+@login_required # Yêu cầu người dùng đăng nhập để làm test
+def take_test_view(request, test_id):
+    test = get_object_or_404(Test, id=test_id)
+    
+    # Kiểm tra xem người dùng đã làm bài này và chưa hoàn thành không
+    # Hoặc tạo một lần làm bài mới
+    attempt, created = TestAttempt.objects.get_or_create(
+        user=request.user,
+        test=test,
+        completed=False, # Chỉ lấy hoặc tạo nếu chưa hoàn thành
+        defaults={'start_time': timezone.now()}
+    )
+
+    # Nếu attempt đã tồn tại và đã hoàn thành, có thể chuyển đến trang kết quả hoặc thông báo
+    if not created and attempt.completed:
+        # return redirect('test_result_url_name', attempt_id=attempt.id) # Chuyển đến trang kết quả
+        return render(request, 'app/test_already_completed.html', {'attempt': attempt})
+
+
+    # Tính thời gian còn lại nếu attempt đã tồn tại
+    time_elapsed = (timezone.now() - attempt.start_time).total_seconds()
+    time_remaining = (test.time_limit_minutes * 60) - time_elapsed
+
+    if time_remaining <= 0:
+        # Xử lý hết giờ nếu cần (ví dụ, tự động nộp bài)
+        # Hoặc chỉ hiển thị thông báo trên template
+        pass # Sẽ xử lý bằng JS trên client trước
+
+    questions = test.questions.all().prefetch_related('choices') # Lấy câu hỏi và các lựa chọn
+
+    context = {
+        'test': test,
+        'questions': questions,
+        'attempt_id': attempt.id,
+        'time_remaining_seconds': max(0, int(time_remaining)), # Đảm bảo không âm
+    }
+    return render(request, 'app/online_test.html', context)
+
+@login_required
+@transaction.atomic # Đảm bảo tất cả các thao tác DB hoặc thành công hoặc rollback
+def submit_test_view(request, attempt_id):
+    if request.method == 'POST':
+        attempt = get_object_or_404(TestAttempt, id=attempt_id, user=request.user)
+
+        if attempt.completed:
+            # return redirect('test_result_url_name', attempt_id=attempt.id)
+            return HttpResponseForbidden("Bài test này đã được nộp.")
+
+        questions = attempt.test.questions.all()
+        total_questions = questions.count()
+        correct_answers = 0
+
+        for question in questions:
+            selected_choice_id = request.POST.get(f'question_{question.id}')
+            if selected_choice_id:
+                try:
+                    selected_choice = Choice.objects.get(id=selected_choice_id, question=question)
+                    UserAnswer.objects.create(
+                        attempt=attempt,
+                        question=question,
+                        selected_choice=selected_choice
+                    )
+                    if selected_choice.is_correct:
+                        correct_answers += 1
+                except Choice.DoesNotExist:
+                    # Lựa chọn không hợp lệ, có thể bỏ qua hoặc ghi log
+                    pass
+        attempt.correct_answers_count = correct_answers
+        attempt.total_questions_at_submission = total_questions
+        attempt.score = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
+        attempt.end_time = timezone.now()
+        attempt.completed = True
+        attempt.save()
+
+        # Chuyển hướng đến trang kết quả
+        return redirect('test_result_url_name', attempt_id=attempt.id) # Tạo URL này ở bước sau
+
+    return redirect('home') # Hoặc trang danh sách test
+
+@login_required
+def test_result_view(request, attempt_id):
+    attempt = get_object_or_404(TestAttempt, id=attempt_id, user=request.user)
+    if not attempt.completed:
+        # Nếu chưa hoàn thành thì không cho xem kết quả, có thể redirect về trang test
+        return redirect('take_test', test_id=attempt.test.id)
+    
+    context = {
+        'attempt': attempt
+    }
+    return render(request, 'app/test_result.html', context)
 
 import matplotlib.pyplot as plt
 from io import BytesIO

@@ -1,0 +1,115 @@
+{% load static %}
+
+{% block title %}Kết quả bài test: {{ attempt.test.title }}{% endblock %}
+
+{% block head_extra %}
+  <link rel="stylesheet" href="{% static 'app/css/login.css' %}">
+  <style>
+    body {
+      background-image: url("{% static 'app/images/bglogin.jpg' %}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      /* background-attachment: fixed; /* Bạn có thể thêm lại nếu muốn background cố định */
+    }
+    .page-container-result { /* Container bao ngoài cùng */
+        padding-top: 20px; /* Khoảng cách từ trên cùng của trang */
+    }
+    .site-brand-link-result { /* Style cho link English4All */
+      display: block;
+      text-align: center;
+      font-size: 2em; /* Tăng kích thước chữ */
+      font-weight: bold;
+      margin-bottom: 25px; /* Khoảng cách với .result-container bên dưới */
+      text-decoration: none;
+      color: #007bff;
+    }
+    .site-brand-link-result:hover {
+      color: #0056b3;
+    }
+    .result-container {
+      max-width: 600px;
+      margin: 0 auto 50px auto; /* Bỏ margin-top, chỉ giữ margin-bottom và auto cho trái/phải */
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .result-container h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .result-container h2 { /* Điểm số */
+      color: #007bff;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+    }
+    .result-container p {
+      color: #555;
+      font-size: 1.1em;
+      margin-bottom: 10px;
+    }
+    .result-details p {
+        margin-bottom: 5px;
+        font-size: 1.05em;
+    }
+    .result-details .correct {
+        color: #28a745;
+        font-weight: bold;
+    }
+    .result-details .incorrect {
+        color: #dc3545;
+        font-weight: bold;
+    }
+    .result-container .actions {
+        margin-top: 30px;
+    }
+    .result-container .actions a {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 5px;
+    }
+    .result-container .actions a.secondary {
+        background-color: #6c757d;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container-result"> {# Container bao ngoài cùng #}
+
+    {# Đặt link English4All ở đây #}
+    <div>
+        <a href="{% url 'home' %}" class="site-brand-link-result">
+          English4All
+        </a>
+    </div>
+
+    <div class="result-container">
+      <h1>Kết quả bài test: {{ attempt.test.title }}</h1>
+      <p>Chúc mừng <strong>{{ attempt.user.username }}</strong> đã hoàn thành bài test!</p>
+      
+      <h2>Điểm của bạn: {{ attempt.score|floatformat:2 }}%</h2>
+
+      <div class="result-details">
+        {% if attempt.total_questions_at_submission is not None and attempt.correct_answers_count is not None %}
+            <p>Tổng số câu: {{ attempt.total_questions_at_submission }}</p>
+            <p>Số câu trả lời đúng: <span class="correct">{{ attempt.correct_answers_count }}</span></p>
+        {% elif attempt.score is not None %} {# Fallback nếu chưa có chi tiết câu đúng/sai #}
+             <p><em>Chi tiết số câu đúng/sai chưa được cập nhật cho bài làm này.</em></p>
+        {% endif %}
+      </div>
+
+      <p style="margin-top: 20px;">Thời gian hoàn thành: {{ attempt.end_time|timesince:attempt.start_time }}</p>
+      
+      <div class="actions">
+          <a href="{% url 'home' %}">Quay về Trang chủ</a>
+          <a href="{% url 'test' %}" class="secondary">Làm bài test khác</a>
+      </div>
+    </div>
+</div>
+{% endblock %}

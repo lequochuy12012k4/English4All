@@ -1,0 +1,97 @@
+{% load static %}
+
+{% block head_extra %}
+  <style>
+    /* Ví dụ CSS đơn giản */
+    body {
+      background-image: url("{% static 'app/images/bglogin.jpg' %}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      font-family: Arial, sans-serif;
+    }
+    .test-list-page-container { /* Đổi tên container cha một chút để rõ ràng hơn */
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+    .site-brand-link { /* Style cho link English4All */
+      display: block; /* Để nó chiếm toàn bộ chiều rộng và dễ căn giữa */
+      text-align: center; /* Căn giữa chữ */
+      font-size: 2em; /* Tăng kích thước chữ */
+      font-weight: bold;
+      margin-bottom: 25px; /* Khoảng cách với tiêu đề bên dưới */
+      text-decoration: none;
+      color: #007bff;
+    }
+    .site-brand-link:hover {
+      color: #0056b3;
+    }
+
+    .test-list-header h1 { /* Giữ lại style cho tiêu đề chính */
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .test-item {
+      background-color: #f9f9f9;
+      border: 1px solid #eee;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .test-item h2 a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 1.5em;
+    }
+    .test-item h2 a:hover {
+      text-decoration: underline;
+    }
+    .test-item p {
+      color: #555;
+      margin-top: 10px;
+      font-size: 0.95em;
+    }
+    .test-item .details {
+        font-size: 0.85em;
+        color: #777;
+        margin-top: 15px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="test-list-page-container">
+    
+    <div> 
+        <a href="{% url 'home' %}" class="site-brand-link">
+          English4All
+        </a>
+    </div>
+
+    <div class="test-list-header">
+        <h1>Danh sách Bài Kiểm Tra Online</h1>
+    </div>
+
+    {% if tests %}
+        {% for test_item in tests %}
+        <a href="{% url 'take_test' test_id=test_item.id %} " style="text-decoration: none;">
+            <div class="test-item">
+                <h2>{{ test_item.title }}</h2>
+                {% if test_item.description %}
+                    <p>{{ test_item.description|truncatewords:30 }}</p>
+                {% endif %}
+                <div class="details">
+                    <span>Thời gian làm bài: {{ test_item.time_limit_minutes }} phút</span> |
+                    <span>Số câu hỏi: {{ test_item.questions.count }}</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    {% else %}
+        <p style="text-align: center; font-size: 1.1em;">Hiện tại chưa có bài kiểm tra nào.</p>
+    {% endif %}
+</div>
+{% endblock %}
