@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5 # Thiết lập môi trường Python
         with:
-          python-version: '3.9' # Chọn phiên bản Python bạn muốn sử dụng (ví dụ: 3.8, 3.9, 3.10, 3.11)
+          python-version: '3.11' # Chọn phiên bản Python bạn muốn sử dụng (ví dụ: 3.8, 3.9, 3.10, 3.11)
 
       - name: Install dependencies
         run: |
