@@ -3,82 +3,153 @@ name: Django CI/CD
 on:
   push:
     branches:
-      - master # Kích hoạt workflow khi có push lên nhánh 'main'
+      - master # Kích hoạt workflow khi có push lên nhánh 'master'
   pull_request:
     branches:
-      - master # Chạy workflow khi có pull request đến nhánh 'main'
+      - master # Chạy workflow khi có pull request đến nhánh 'master'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest # Chạy job trên runner Ubuntu mới nhất
+  # Job 1: Chạy các bài kiểm thử Django
+  test:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4 # Kéo mã nguồn từ repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5 # Thiết lập môi trường Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11' # Chọn phiên bản Python bạn muốn sử dụng (ví dụ: 3.8, 3.9, 3.10, 3.11)
+          python-version: '3.11' # Phiên bản Python bạn đã chọn
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt # Cài đặt các gói từ requirements.txt
+          pip install -r requirements.txt
+          pip install coverage # Cài đặt coverage để đo độ bao phủ của code
 
-      - name: Run Django migrations (optional, for testing with a real DB)
-        # Bước này thường chỉ thực hiện trong môi trường test hoặc staging.
-        # Trong môi trường production, bạn có thể chạy migrate như một bước riêng.
+      - name: Run Django migrations for test database
+        # Sử dụng SQLite trong bộ nhớ cho các bài kiểm thử để tăng tốc
         run: python manage.py migrate --noinput
         env:
-          DJANGO_SETTINGS_MODULE: english_web.settings # Thay your_project_name bằng tên project Django của bạn
-          DATABASE_URL: sqlite:///db.sqlite3 # Ví dụ dùng SQLite cho test. Thay đổi nếu bạn dùng DB khác.
+          DJANGO_SETTINGS_MODULE: english_web.settings
+          DATABASE_URL: sqlite:///db.sqlite3
 
-      - name: Run Django tests
-        run: python manage.py test # Chạy các bài kiểm thử của Django
+      - name: Run Django tests with coverage
+        run: coverage run manage.py test && coverage report # Chạy test và hiển thị báo cáo độ bao phủ
         env:
-          DJANGO_SETTINGS_MODULE: english_web.settings # Thay your_project_name bằng tên project Django của bạn
-          DATABASE_URL: sqlite:///db.sqlite3 # Đảm bảo DB config cho test
+          DJANGO_SETTINGS_MODULE: english_web.settings
+          DATABASE_URL: sqlite:///db.sqlite3
 
-      # --- Các bước triển khai (Deployment) - Tùy chọn ---
-      # Các bước này sẽ thay đổi rất nhiều tùy thuộc vào nơi bạn muốn triển khai ứng dụng.
-      # Dưới đây là một ví dụ điển hình cho việc xây dựng và đẩy Docker image.
+      # Tùy chọn: Upload báo cáo độ bao phủ lên Codecov hoặc Coveralls
+      # - name: Generate coverage XML report (if needed for Codecov/Coveralls)
+      #   run: coverage xml # Tạo file coverage.xml
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }} # Cần tạo secret này trong GitHub
+      #     file: ./coverage.xml
+
+  # Job 2: Kiểm tra phong cách code (Linting)
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install linters
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black isort
+
+      - name: Run Flake8 (kiểm tra lỗi cú pháp và phong cách PEP 8)
+        run: flake8 . --max-line-length=120 # Điều chỉnh max-line-length nếu cần
+
+      - name: Run Black (kiểm tra định dạng code)
+        run: black --check . # '--check' để chỉ kiểm tra mà không thay đổi file
+
+      - name: Run isort (kiểm tra thứ tự import)
+        run: isort --check-only . # '--check-only' để chỉ kiểm tra mà không thay đổi file
+
+  # Job 3: Kiểm tra bảo mật (Security Scan)
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Bandit
+        run: pip install bandit
+      - name: Run Bandit security scan
+        # -r: recursive, -x: exclude (loại trừ thư mục ảo venv và các file migrations)
+        run: bandit -r . -x venv,*/migrations/*
+
+  # Job 4: Build và Push Docker image
+  build-docker-image:
+    runs-on: ubuntu-latest
+    needs: [test, lint, security-scan] # Chỉ chạy khi test, lint, và security-scan thành công
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' # Chỉ build/push khi push lên nhánh master
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Chỉ chạy nếu là push lên nhánh main
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
-          username: ${{ secrets.DOCKER_USERNAME }} # GitHub Secret cho Docker Hub username
-          password: ${{ secrets.DOCKER_PASSWORD }} # GitHub Secret cho Docker Hub password
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           context: . # Đường dẫn đến Dockerfile của bạn (nếu ở thư mục gốc)
           file: ./Dockerfile # Đường dẫn đến Dockerfile của bạn
           push: true
           tags: |
-            your-dockerhub-username/your-django-app:latest # Thay bằng tên người dùng Docker Hub và tên repo của bạn
-            your-dockerhub-username/your-django-app:${{ github.sha }} # Tag với SHA của commit
+            lequochuy2004/english-web:latest # <-- CẬP NHẬT TÊN IMAGE CỦA BẠN VÀ USERNAME DOCKER HUB
+            lequochuy2004/english-web:${{ github.sha }} # Tag với SHA của commit
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      # --- Ví dụ triển khai lên SSH/Server (nếu không dùng Docker cho deployment) ---
-      # - name: Deploy via SSH
-      #   uses: appleboy/ssh-action@master
-      #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      #   with:
-      #     host: ${{ secrets.SSH_HOST }}
-      #     username: ${{ secrets.SSH_USERNAME }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       cd /path/to/your/django/project
-      #       git pull origin main
-      #       pip install -r requirements.txt
-      #       python manage.py migrate
-      #       # Restart Gunicorn/Apache/Nginx service
-      #       sudo systemctl restart gunicorn your_django_app
-      #       sudo systemctl restart nginx
+  # Job 5: Triển khai (Deployment) - Tùy chọn, chỉ chạy sau khi image đã được build và push
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: [build-docker-image] # Đảm bảo image đã được build và push thành công
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/master' # Chỉ deploy khi push lên nhánh master
+
+  #   steps:
+  #     - name: SSH into server and deploy
+  #       uses: appleboy/ssh-action@master # Sử dụng action SSH để kết nối đến server
+  #       with:
+  #         host: ${{ secrets.SSH_HOST }}
+  #         username: ${{ secrets.SSH_USERNAME }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }} # Private SSH key của server
+  #         script: |
+  #           echo "Starting deployment on server..."
+  #           # Điều hướng đến thư mục dự án trên server
+  #           cd /path/to/your/django/project # <-- Thay đổi bằng đường dẫn thực tế trên server
+            
+  #           # Kéo Docker image mới nhất từ Docker Hub
+  #           docker pull lequochuy2004/english-web:latest # <-- CẬP NHẬT TÊN IMAGE CỦA BẠN
+            
+  #           # Dừng và xóa container cũ (nếu có)
+  #           docker stop english-web-app-container || true
+  #           docker rm english-web-app-container || true
+            
+  #           # Chạy container mới với image vừa kéo
+  #           # Cổng 80 trên host ánh xạ tới cổng 8000 bên trong container (cổng mặc định của Gunicorn/Django)
+  #           docker run -d --name english-web-app-container -p 80:8000 lequochuy2004/english-web:latest
+            
+  #           echo "Deployment complete. Check your application at http://your_server_ip"
