@@ -87,10 +87,10 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install Bandit
-        run: pip install bandit
+        run: pip install safety
       - name: Run Bandit security scan
         # -r: recursive, -x: exclude (loại trừ thư mục ảo venv và các file migrations)
-        run: bandit -r . -x venv,*/migrations/*
+        run: safety check
 
   # Job 4: Build và Push Docker image
   build-docker-image:
