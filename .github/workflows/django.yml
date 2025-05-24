@@ -93,7 +93,7 @@ jobs:
           file: ./Dockerfile # Đường dẫn đến Dockerfile của bạn
           push: true
           tags: |
-            lequochuy2004/english4all:latest # <-- CẬP NHẬT TÊN IMAGE CỦA BẠN VÀ USERNAME DOCKER HUB
+            lequochuy2004/english4all:latest
             lequochuy2004/english4all:${{ github.sha }} # Tag với SHA của commit
           cache-from: type=gha
           cache-to: type=gha,mode=max
