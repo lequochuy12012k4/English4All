@@ -94,7 +94,7 @@ jobs:
           push: true
           tags: |
             lequochuy2004/english4all:latest
-            lequochuy2004/english4all:${{ github.sha }} # Tag với SHA của commit
+            lequochuy2004/english4all:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
