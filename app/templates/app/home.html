@@ -1,6 +1,7 @@
 {% extends 'app/base.html' %}
 {% load static %}
-{% block content %} 
+{% block content %}
+
 <body>
     <section class="hero">
         <div class="hero-content">
@@ -36,22 +37,27 @@
                 <h4>Cấp độ: {{course.level}}</h4>
                 <p>{{course.content}}</p>
                 <p>Giá: <strong>{{course.price}} VNĐ</strong></p>
+                <button class="btn view-course-details-trigger"
+                    style="background-color: #17a2b8; color: white; margin-bottom: 10px;" data-name="{{ course.name }}"
+                    data-level="{{ course.level }}" data-price="{{ course.price }}"
+                    data-description="{{ course.content }}" data-duration="{{ course.duration|default:'N/A' }}" {#
+                    Assumes course.duration field exists #} data-video-url="{{ course.video_url|default:'' }}" {#
+                    Assumes course.video_url field exists #} data-image-url="{{ course.ImageURL }}">
+                    Xem chi tiết
+                </button>
                 {% if user.is_authenticated %}
-                <form action="{% url 'thanh_toan' %}" method="POST" onsubmit="return confirmPurchase()">
+                <form action="{% url 'thanh_toan' %}" method="POST" onsubmit="confirmPurchase()">
                     {% csrf_token %}
                     <input type="hidden" name="course_id" value="{{ course.id }}">
-                    <button type="submit" data-course= {{course.id}} data-action="add" value="buy" class="btn view-course-details buy-course"
-                        data-course-id="TiengAnhGiaoTiep">Mua khóa học</button>
+                    <button type="submit" data-course={{course.id}} data-action="add" value="buy"
+                        class="btn view-course-details buy-course" data-course-id="TiengAnhGiaoTiep">Mua khóa
+                        học</button>
                 </form>
                 <script>
                     function confirmPurchase() {
-                        if (confirm("Bạn có chắc chắn muốn mua khóa học này?")) {
-                            alert("Khóa học được thêm vào phần thanh toán")
-                            return true; // Cho phép form tiếp tục submit (nếu có)
-                        } else {
-                            // Nếu người dùng nhấn Cancel
-                            return false; // Ngăn form submit (nếu có)
-                        }
+
+                        alert("Khóa học được thêm vào phần thanh toán")
+
                     }
                 </script>
                 {% else %}
@@ -349,7 +355,7 @@
             {% csrf_token %}
             <input type="text" placeholder="Họ và tên" name="full_name">
             <input type="email" placeholder="Email của bạn" name="email">
-            <input type="text" placeholder="Số điện thoại" name = "phone_number">
+            <input type="text" placeholder="Số điện thoại" name="phone_number">
             <input type="text" placeholder="Trường học" name="school">
             <input list="loai_chung_chi" placeholder="Loại chứng chỉ" name="certificate">
             <datalist id="loai_chung_chi">
@@ -477,6 +483,93 @@
             </div>
         </div>
     </section>
+
+    <div id="courseDetailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">×</span>
+            <h2 id="modalCourseName" style="margin-top: 0;"></h2>
+            <div id="courseDetailsContent">
+                <p><strong>Cấp độ:</strong> <span id="modalCourseLevel"></span></p>
+                <p><strong>Giá:</strong> <span id="modalCoursePrice"></span> VNĐ</p>
+                <p><strong>Thời gian học:</strong> <span id="modalCourseDuration"></span></p>
+                <p><strong>Mô tả:</strong></p>
+                <div id="modalCourseDescription" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
+                </div>
+                <div id="modalCourseVideoContainer" style="margin-top:15px;">
+                    <p><strong>Video Khóa học:</strong></p>
+                    <iframe id="modalCourseVideo" width="100%" height="315" src="" title="Course Video" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            /* Ensure it's above other content */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding-top: 50px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 25px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            /* Changed from float for better control */
+            top: 10px;
+            right: 15px;
+            font-size: 30px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #modalCourseVideoContainer iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .view-course-details-trigger {
+            /* Basic styling for the new button */
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid #17a2b8;
+            font-weight: bold;
+        }
+
+        .view-course-details-trigger:hover {
+            background-color: #138496 !important;
+            /* ensure hover is darker */
+        }
+    </style>
     <style>
         /* FAQ Styles */
         .faq {
@@ -734,6 +827,73 @@
             setInterval(nextSlide, 3000); // Change slide every 3 seconds
         });
     </script>
-    <script src="{% static 'app/js/payment.js' %}"></script>    
+    <script>
+        const modal = document.getElementById('courseDetailsModal');
+        if (modal) { // Check if modal exists
+            const modalCourseName = document.getElementById('modalCourseName');
+            const modalCourseLevel = document.getElementById('modalCourseLevel');
+            const modalCoursePrice = document.getElementById('modalCoursePrice');
+            const modalCourseDuration = document.getElementById('modalCourseDuration');
+            const modalCourseDescription = document.getElementById('modalCourseDescription');
+            const modalCourseVideo = document.getElementById('modalCourseVideo');
+            const modalCourseVideoContainer = document.getElementById('modalCourseVideoContainer');
+            const closeButton = modal.querySelector('.close-button');
+
+            const detailTriggers = document.querySelectorAll('.view-course-details-trigger');
+
+            detailTriggers.forEach(button => {
+                button.addEventListener('click', function () {
+                    const name = this.dataset.name;
+                    const level = this.dataset.level;
+                    const price = this.dataset.price;
+                    const description = this.dataset.description;
+                    const duration = this.dataset.duration;
+                    const videoUrl = this.dataset.videoUrl;
+
+                    if (modalCourseName) modalCourseName.textContent = name;
+                    if (modalCourseLevel) modalCourseLevel.textContent = level;
+                    if (modalCoursePrice) modalCoursePrice.textContent = price;
+                    if (modalCourseDuration) modalCourseDuration.textContent = duration;
+                    if (modalCourseDescription) modalCourseDescription.innerHTML = description; // Use innerHTML if description contains HTML formatting
+
+                    if (videoUrl && modalCourseVideo) {
+                        let embedUrl = videoUrl;
+                        if (videoUrl.includes("youtube.com/watch?v=")) {
+                            embedUrl = videoUrl.replace("watch?v=", "embed/");
+                        } else if (videoUrl.includes("youtu.be/")) {
+                            embedUrl = videoUrl.replace("youtu.be/", "youtube.com/embed/");
+                        }
+                        // Remove query parameters like list, t, etc. from YouTube embed URL
+                        if (embedUrl.includes("?")) {
+                            embedUrl = embedUrl.substring(0, embedUrl.indexOf("?"));
+                        }
+                        modalCourseVideo.src = embedUrl;
+                        if (modalCourseVideoContainer) modalCourseVideoContainer.style.display = 'block';
+                    } else {
+                        if (modalCourseVideo) modalCourseVideo.src = '';
+                        if (modalCourseVideoContainer) modalCourseVideoContainer.style.display = 'none';
+                    }
+                    modal.style.display = 'block';
+                });
+            });
+
+            if (closeButton) {
+                closeButton.addEventListener('click', function () {
+                    modal.style.display = 'none';
+                    if (modalCourseVideo) modalCourseVideo.src = ''; // Stop video when closing
+                });
+            }
+
+            window.addEventListener('click', function (event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                    if (modalCourseVideo) modalCourseVideo.src = ''; // Stop video when closing
+                }
+            });
+        }
+        // Existing FAQ script should be here if it's not already in base.html or another global script.
+        // (It was included above, so I've kept its relative position)
+    </script>
+    <script src="{% static 'app/js/payment.js' %}"></script>
 </body>
 {% endblock content %}

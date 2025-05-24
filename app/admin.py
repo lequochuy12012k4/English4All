@@ -1,25 +1,121 @@
 from django.contrib import admin
-from django.contrib import messages
-from django.urls import path
-from django.shortcuts import render
 from .models import *
-from django import forms
-from .models import Login_User
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.utils.html import format_html
 
-admin.site.register(Customer_Comment)
-admin.site.register(Teacher)
-admin.site.register(Course)
-admin.site.register(Tai_lieu)
-admin.site.register(Order)
-admin.site.register(OrderItem)
+class Customer_CommentAdmin(admin.ModelAdmin): 
+    list_display = ('name', 'user_display', 'email', 'short_comment') 
+    search_fields = ('name', 'user__username', 'user__email', 'email', 'comment') 
+    list_filter = ('user',)
+
+    fields = ('name', 'user', 'email', 'comment')
+
+    def user_display(self, obj):
+        if obj.user:
+            return obj.user.username 
+        return "-"
+    user_display.short_description = 'Người dùng'
+
+    def short_comment(self, obj):
+        if obj.comment:
+            return (obj.comment[:75] + '...') if len(obj.comment) > 75 else obj.comment
+        return "-"
+    short_comment.short_description = 'Bình luận (ngắn)' 
+admin.site.register(Customer_Comment, Customer_CommentAdmin)
+
+class TeacherAdmin(admin.ModelAdmin):
+    list_display = ('name', 'comment', 'teacher_tag')
+    search_fields = ('name', 'comment')
+
+    def teacher_tag(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-width:100px; max-height:100px;" />'.format(obj.image.url))
+        return "No Image"
+    teacher_tag.short_description = 'Hình ảnh'
+    fields = ('name', 'comment', 'image')
+admin.site.register(Teacher, TeacherAdmin)
+
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ('name', 'level', 'price', 'duration', 'image_tag','video_url')
+    list_filter = ('level',)
+    search_fields = ('name', 'content')
+
+    def image_tag(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-width:100px; max-height:100px;" />'.format(obj.image.url))
+        return "-"
+    image_tag.short_description = 'Hình ảnh'
+    fields = ('name', 'level', 'price', 'duration', 'image', 'content', 'video_url')
+admin.site.register(Course, CourseAdmin)
+
+class Tai_lieuAdmin(admin.ModelAdmin):
+    list_display = ('name', 'content','image_tag','file_upload')
+    search_fields = ('name', 'content')
+
+    def image_tag(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-width:100px; max-height:100px;" />'.format(obj.image.url))
+        return "-"
+    image_tag.short_description = 'Hình ảnh'
+    fields = ('name', 'content','image','file_upload')
+admin.site.register(Tai_lieu,Tai_lieuAdmin)
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('customer', 'date_order','complete','transaction_id')
+    search_fields = ('customer', 'date_order')
+    fields = ('customer', 'date_order','complete','transaction_id')
+admin.site.register(Order,OrderAdmin)
+
+class OrderItemsAdmin(admin.ModelAdmin):
+    list_display = ('course', 'order','date_added','quantity')
+    search_fields = ('course', 'date_added')
+    fields = ('name', 'user', 'email', 'comment')
+admin.site.register(OrderItem,OrderItemsAdmin)
+
+class BookOrderAdmin(admin.ModelAdmin):
+    list_display = ('book', 'order','date_added','quantity')
+    search_fields = ('book', 'date_added')
+    fields = ('book', 'order','date_added','quantity')
 admin.site.register(BookOrderItem)
-admin.site.register(Chatbot_message)
-admin.site.register(De_thi)
-admin.site.register(Sach)
-admin.site.register(FlashCard_Vocabulary)
-admin.site.register(Vinh_danh)
+
+class Chatbot_messageAdmin(admin.ModelAdmin):
+    list_display = ('message', 'response','created_at')
+    search_fields = ('message', 'response','created_at')
+    fields = ('message', 'response','created_at')
+admin.site.register(Chatbot_message,Chatbot_messageAdmin)
+
+class De_thiAdmin(admin.ModelAdmin):
+    list_display = ('name', 'level','image_tag','file_upload')
+    search_fields = ('name',)
+
+    def image_tag(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-width:100px; max-height:100px;" />'.format(obj.image.url))
+        return "-"
+    image_tag.short_description = 'Hình ảnh'
+    fields = ('name', 'level','image','file_upload')
+admin.site.register(De_thi,De_thiAdmin)
+
+class SachAdmin(admin.ModelAdmin):
+    list_display = ('name', 'author', 'price', 'evaluate', 'content','image_tag')
+    search_fields = ('name', 'content')
+
+    def image_tag(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-width:100px; max-height:100px;" />'.format(obj.image.url))
+        return "-"
+    image_tag.short_description = 'Hình ảnh'
+    fields = ('name', 'author', 'price', 'evaluate', 'content','image')
+admin.site.register(Sach, SachAdmin)
+
+class FlashCard_VocabularyAdmin(admin.ModelAdmin):
+    list_display = ('file_csv',)
+    fields = ('file_csv',)
+admin.site.register(FlashCard_Vocabulary,FlashCard_VocabularyAdmin)
+
+class VinhdanhAdmin(admin.ModelAdmin):
+    list_display = ('file_csv',)
+    fields = ('file_csv',)
+admin.site.register(Vinh_danh,VinhdanhAdmin)
 
 class ChoiceInline(admin.TabularInline): # Hoặc admin.StackedInline
     model = Choice
@@ -29,24 +125,12 @@ class ChoiceInline(admin.TabularInline): # Hoặc admin.StackedInline
     # ordering = ('some_order_field',) # Nếu bạn có trường order riêng trong Choice model
 
     def get_choice_label(self, obj):
-        # obj là instance của Choice
-        # Chúng ta cần biết thứ tự của Choice này trong tập hợp các choices của Question
-        # Đây là phần hơi phức tạp vì inline formset không dễ dàng cung cấp index trực tiếp
-        # trong hàm này khi đối tượng chưa được lưu.
-
-        # Cách tiếp cận: nếu đối tượng đã được lưu (có pk), tìm index của nó
         if obj.pk:
             try:
-                # Lấy tất cả choices của question hiện tại, sắp xếp theo id (hoặc trường order nếu có)
-                # Lưu ý: Điều này có thể không hoàn toàn chính xác nếu người dùng đang sắp xếp lại
-                # các inline mà chưa lưu.
                 question_choices = list(obj.question.choices.all().order_by('id'))
-                # Tìm index của obj trong danh sách này
                 index = question_choices.index(obj)
-                return chr(65 + index) # 65 là mã ASCII của 'A'
+                return chr(65 + index) 
             except (ValueError, AttributeError):
-                # AttributeError nếu obj.question chưa được set (khi form mới)
-                # ValueError nếu obj không tìm thấy (không nên xảy ra nếu obj.pk có)
                 return "-" # Hoặc một placeholder khác
         return "-" # Placeholder cho form mới chưa được lưu
     

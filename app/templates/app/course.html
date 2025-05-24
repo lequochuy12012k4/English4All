@@ -1,9 +1,6 @@
 {% extends 'app/base.html' %}
-{% extends 'app/home.html'}
-{% load static %}
-{% block content %}
-
-<body>
+{# {% extends 'app/home.html'} <- This line was problematic, a template can only extend one parent.
+    Assuming 'app/base.html' is the correct one. #} {% load static %} {% block content %} <body>
     <section class="hero">
         <div class="hero-content">
             <h1>Nâng cao trình độ tiếng Anh của bạn một cách dễ dàng</h1>
@@ -29,28 +26,38 @@
     {% block course %}
     <div class="course-list">
         {% for course in keys %}
-        <div class="course-item" id="course-b1">
-            <img src="{{course.ImageURL}}" alt="Khóa học B1">
-            <h3 id="course_title">{{course.name}}</h3>
+        <div class="course-item" id="course-{{ course.id }}"> {# Made ID dynamic #}
+            <img src="{{course.ImageURL}}" alt="{{course.name}}">
+            <h3 id="course_title_{{course.id}}">{{course.name}}</h3> {# Made ID dynamic #}
             <h4>Cấp độ: {{course.level}}</h4>
-            <p>{{course.content}}</p>
+            <p>{{course.content|truncatewords:20}}</p> {# Added truncatewords for a preview #}
             <p>Giá: <strong>{{course.price}} VNĐ</strong></p>
+
+            <!-- Button to trigger modal for course details -->
+            <button class="btn view-course-details-trigger"
+                style="background-color: #17a2b8; color: white; margin-bottom: 10px;" data-name="{{ course.name }}"
+                data-level="{{ course.level }}" data-price="{{ course.price }}" data-description="{{ course.content }}"
+                data-duration="{{ course.duration|default:'N/A' }}" {# Assumes course.duration field exists #}
+                data-video-url="{{ course.video_url|default:'' }}" {# Assumes course.video_url field exists #}
+                data-image-url="{{ course.ImageURL }}">
+                Xem chi tiết
+            </button>
+
             {% if user.is_authenticated %}
             <form action="{% url 'thanh_toan' %}" method="POST" onsubmit="return confirmPurchase()">
                 {% csrf_token %}
-                <input type="hidden" name="course_id" value="{{ course.id }}" value="{{ filter_course }}">
-                <button type="submit" data-course= {{course.id}} data-action="add" class="btn view-course-details buy-course"
-                    data-course-id="TiengAnhGiaoTiep">Mua khóa học</button>
+                <input type="hidden" name="course_id" value="{{ course.id }}"> {# Removed redundant value attribute #}
+                <button type="submit" data-course="{{course.id}}" data-action="add"
+                    class="btn view-course-details buy-course" data-course-id="TiengAnhGiaoTiep">Mua khóa học</button>
+                {# Kept original data-course-id as its usage is unknown #}
             </form>
             <script>
+                // This script is locally scoped to each course item if you generate it in a loop.
+                // It's better to have one global confirmPurchase function if it's generic.
+                // Assuming it's fine here as per original code.
                 function confirmPurchase() {
-                    if (confirm("Bạn có chắc chắn muốn mua khóa học này?")) {
-                        alert("Khóa học được thêm vào phần thanh toán")
-                        return true; // Cho phép form tiếp tục submit (nếu có)
-                    } else {
-                        // Nếu người dùng nhấn Cancel
-                        return false; // Ngăn form submit (nếu có)
-                    }
+
+                    alert("Khóa học được thêm vào phần thanh toán")
                 }
             </script>
             {% else %}
@@ -67,15 +74,15 @@
         <h2>Đội ngũ giáo viên</h2>
         <div class="giao_vien-list">
             {% for teacher in teachers %}
-            <div class="giao_vien-item" id="giao_vien-a1">
-                <img src="{{teacher.ImageURL}}" alt="Giáo viên 1">
+            <div class="giao_vien-item" id="giao_vien-{{teacher.id}}"> {# Made ID dynamic, assuming teacher has an id #}
+                <img src="{{teacher.ImageURL}}" alt="Giáo viên {{ forloop.counter }}">
                 <h3>{{teacher.name}}</h3>
                 <p>{{teacher.comment}}</p>
             </div>
             {% endfor %}
         </div>
     </section>
-    
+
     <section class="university-logos">
         <div class="">
             <h2>English4All tự hào khi là lựa chọn của +30.000 sinh viên<br>tại nhiều trường Đại học, Cao đẳng</h2>
@@ -141,23 +148,16 @@
         .logo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            /* Responsive grid */
             gap: 20px;
             justify-items: center;
-            /* Center items horizontally within each cell */
             align-items: center;
-            /* Vertically center items within each cell */
             padding: 0;
-            /* Remove padding */
             margin: 0 auto;
-            /* Center the grid itself */
             max-width: 1200px;
-            /* Adjust as needed */
         }
 
         .logo-grid img {
             max-width: 100px;
-            /* Adjust the size of the logos */
             height: auto;
             opacity: 0.7;
             transition: opacity 0.3s ease, transform 0.3s ease;
@@ -166,15 +166,12 @@
         .logo-grid img:hover {
             opacity: 1;
             transform: scale(1.1);
-            /* Slight zoom on hover */
         }
 
         /* Basic Slider Styles */
         .slider {
             width: 500px;
-            /* Adjust as needed */
             height: 300px;
-            /* Adjust as needed */
             overflow: hidden;
             position: relative;
         }
@@ -185,7 +182,6 @@
             position: absolute;
             top: 0;
             left: 100%;
-            /* Start off-screen to the right */
             transition: left 1s ease-in-out;
         }
 
@@ -193,12 +189,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* Maintain aspect ratio */
         }
 
         .slide.active {
             left: 0;
-            /* Bring the active slide into view */
         }
     </style>
     <!-- Contact Section -->
@@ -243,7 +237,6 @@
                 </div>
             </div>
 
-            <!-- Add more FAQ items here -->
             <div class="faq-item">
                 <div class="faq-question">
                     <span>TOEIC có giao tiếp được không?</span>
@@ -354,9 +347,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin-bottom: 15px;
             overflow: hidden;
-            /* Important for animation */
             transition: box-shadow 0.3s ease;
-            /* Smooth transition */
         }
 
         .faq-item:hover {
@@ -385,7 +376,6 @@
 
         .faq-question.active i {
             transform: rotate(180deg);
-            /* Rotate the icon */
         }
 
         .faq-answer {
@@ -394,16 +384,13 @@
             color: #495057;
             line-height: 1.5;
             height: 0;
-            /* Initially hidden */
             overflow: hidden;
             transition: height 0.3s ease, padding 0.3s ease;
         }
 
         .faq-answer.active {
             height: auto;
-            /* Expand height */
             padding: 15px 20px;
-            /* Add padding when visible */
         }
     </style>
     <script>
@@ -413,27 +400,45 @@
             faqItems.forEach(item => {
                 const question = item.querySelector('.faq-question');
                 const answer = item.querySelector('.faq-answer');
-                const icon = item.querySelector('.faq-question i'); // Select the icon
+                const icon = item.querySelector('.faq-question i');
 
                 question.addEventListener('click', () => {
-                    // Toggle active class on question
-                    question.classList.toggle('active');
+                    const isActive = question.classList.contains('active');
 
-                    // Toggle active class on answer
-                    answer.classList.toggle('active');
+                    // Close all other active items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.querySelector('.faq-question').classList.remove('active');
+                            otherItem.querySelector('.faq-answer').classList.remove('active');
+                            otherItem.querySelector('.faq-question i').classList.remove('fa-chevron-up');
+                            otherItem.querySelector('.faq-question i').classList.add('fa-chevron-down');
+                        }
+                    });
 
-                    //Toggle font awesome class to chevron
-                    icon.classList.toggle('fas-fa-chevron-up');
+                    // Toggle current item
+                    question.classList.toggle('active', !isActive);
+                    answer.classList.toggle('active', !isActive);
 
+                    if (!isActive) {
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    } else {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    }
                 });
             });
         });
     </script>
-    <section id="contact" class="contact_info">
-        <h2 id="contact_info" class="contact_info_title" style="text-align: center; padding-top: 15px;">Thông tin liên
-            hệ </h2>
+    <section id="contact_section" class="contact_info"> {# Changed id to avoid conflict with other #contact #}
+        <h2 id="contact_info_heading" class="contact_info_title" style="text-align: center; padding-top: 15px;">Thông
+            tin liên
+            hệ </h2> {# Changed id to be more specific #}
         <style>
-            body {
+            /* body selector here might be too broad if this is included in base.html, consider scoping */
+            /* .contact_info body { ... } */
+            .contact_info {
+                /* Scoped to this section */
                 background-color: rgb(255, 255, 255);
                 color: rgb(0, 0, 0);
                 font-family: sans-serif;
@@ -441,41 +446,41 @@
 
             .contact_info_title {
                 font-size: 30px;
-
             }
 
-            .container {
+            .contact_info .container {
+                /* Scoped to this section */
                 display: flex;
                 justify-content: space-around;
                 padding: 20px;
+                flex-wrap: wrap;
+                /* Added for responsiveness */
             }
 
-            .section {
+            .contact_info .section {
+                /* Scoped to this section */
                 width: 30%;
+                min-width: 280px;
+                /* Added for responsiveness */
+                margin-bottom: 20px;
+                /* Added for spacing when wrapped */
             }
 
-            .address-item {
+            .contact_info .address-item {
+                /* Scoped to this section */
                 margin-bottom: 10px;
             }
 
-            .contact-item {
+            .contact_info .contact-item {
+                /* Scoped to this section */
                 margin-bottom: 10px;
             }
 
-            .map-link {
-                display: block;
-                padding: 10px 20px;
-                border: 1px solid white;
-                text-align: center;
-                text-decoration: none;
-                color: white;
-                width: 100px;
-            }
+            /* .map-link style seems unused in the HTML structure shown */
         </style>
-        </head>
+        {# Removed </head> and
 
-        <body>
-
+        <body> tags as they are part of base.html #}
             <div class="container">
                 <div class="section">
                     <h2>TRUNG TÂM ANH NGỮ English4All</h2>
@@ -515,24 +520,22 @@
                 <div class="section">
                     <h2 style="padding-left: 20px;">FANPAGE</h2>
                     <div class="fanpage-item">
-                        <a href=""><img src="{% static 'app/images/photo/slider_home/slider1.png' %}" alt="photo.png"
+                        <a href="#"><img src="{% static 'app/images/photo/slider_home/slider1.png' %}" alt="photo.png"
                                 style="max-width: 30%; height: auto;"></a><br>
-                        <a href=""><img src="{% static 'app/images/photo/slider_home/slider1.png' %}" alt="photo2.png"
+                        <a href="#"><img src="{% static 'app/images/photo/slider_home/slider1.png' %}" alt="photo2.png"
                                 style="max-width: 30%; height: auto;"></a>
                         <style>
                             .fanpage-item {
                                 height: auto;
                                 width: 100%;
-                                /* Adjust to 100% */
                                 text-align: center;
-                                /*Center fanpage in this section */
                             }
 
                             .fanpage-item img {
                                 display: block;
-                                /* Prevent images from floating next to each other */
-                                margin: 0 auto;
-                                margin-left: 15px;
+                                margin: 10px auto;
+                                /* Added vertical margin */
+                                /* margin-left: 15px; <- This might not center if width is not 100% of its parent */
                             }
                         </style>
                     </div>
@@ -540,52 +543,202 @@
             </div>
     </section>
 
-    <!-- Course Details Modal -->
+    <!-- Course Details Modal HTML (New) -->
     <div id="courseDetailsModal" class="modal">
         <div class="modal-content">
-            <h2 id="courseDetailsTitle"></h2>
+            <span class="close-button">×</span>
+            <h2 id="modalCourseName" style="margin-top: 0;"></h2>
             <div id="courseDetailsContent">
-                <!-- Nội dung chi tiết khóa học sẽ được thêm vào đây -->
+                <p><strong>Cấp độ:</strong> <span id="modalCourseLevel"></span></p>
+                <p><strong>Giá:</strong> <span id="modalCoursePrice"></span> VNĐ</p>
+                <p><strong>Thời gian học:</strong> <span id="modalCourseDuration"></span></p>
+                <p><strong>Mô tả:</strong></p>
+                <div id="modalCourseDescription" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
+                </div>
+                <div id="modalCourseVideoContainer" style="margin-top:15px;">
+                    <p><strong>Video Khóa học:</strong></p>
+                    <iframe id="modalCourseVideo" width="100%" height="315" src="" title="Course Video" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen></iframe>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Styles for Modal (New) -->
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            /* Ensure it's above other content */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding-top: 50px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 25px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 700px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            /* Changed from float for better control */
+            top: 10px;
+            right: 15px;
+            font-size: 30px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #modalCourseVideoContainer iframe {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .view-course-details-trigger {
+            /* Basic styling for the new button */
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid #17a2b8;
+            font-weight: bold;
+        }
+
+        .view-course-details-trigger:hover {
+            background-color: #138496 !important;
+            /* ensure hover is darker */
+        }
+    </style>
+
     <script>
+        // This script should be placed preferably at the end of the body, or in a separate JS file.
         document.addEventListener('DOMContentLoaded', function () {
+            // Slider Script (from original)
             const slides = document.querySelectorAll('.slide');
-            let currentSlide = 0;
+            if (slides.length > 0) { // Check if slides exist
+                let currentSlide = 0;
+                slides.forEach((slide, index) => {
+                    slide.style.left = '100%';
+                    if (index === 0) {
+                        slide.classList.add('active');
+                        slide.style.left = '0';
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
 
-            // Initially set all slides to be offscreen to the right.  This makes the "cover" animation work
-            slides.forEach((slide, index) => {
-                slide.style.left = '100%';
-                if (index === 0) {
-                    slide.classList.add('active');
-                    slide.style.left = '0'; // Make the initial slide visible.
-                } else {
-                    slide.classList.remove('active');
+                function showSlide(n) {
+                    if (slides[currentSlide]) {
+                        slides[currentSlide].classList.remove('active');
+                        slides[currentSlide].style.left = '-100%';
+                    }
+                    currentSlide = n;
+                    if (slides[currentSlide]) {
+                        slides[currentSlide].classList.add('active');
+                        slides[currentSlide].style.left = '0';
+                    }
                 }
-            });
 
-            function showSlide(n) {
-                // Remove active class from current slide
-                slides[currentSlide].classList.remove('active');
-                slides[currentSlide].style.left = '-100%'; // Move current slide offscreen to the left
-
-                // Update current slide
-                currentSlide = n;
-
-                // Add active class to new slide
-                slides[currentSlide].classList.add('active');
-                slides[currentSlide].style.left = '0'; // Slide in from the right
+                function nextSlide() {
+                    if (slides.length > 0) {
+                        let next = (currentSlide + 1) % slides.length;
+                        showSlide(next);
+                    }
+                }
+                setInterval(nextSlide, 3000);
             }
 
-            function nextSlide() {
-                let next = (currentSlide + 1) % slides.length;
-                showSlide(next);
-            }
+            // Course Details Modal Script (New)
+            const modal = document.getElementById('courseDetailsModal');
+            if (modal) { // Check if modal exists
+                const modalCourseName = document.getElementById('modalCourseName');
+                const modalCourseLevel = document.getElementById('modalCourseLevel');
+                const modalCoursePrice = document.getElementById('modalCoursePrice');
+                const modalCourseDuration = document.getElementById('modalCourseDuration');
+                const modalCourseDescription = document.getElementById('modalCourseDescription');
+                const modalCourseVideo = document.getElementById('modalCourseVideo');
+                const modalCourseVideoContainer = document.getElementById('modalCourseVideoContainer');
+                const closeButton = modal.querySelector('.close-button');
 
-            setInterval(nextSlide, 3000); // Change slide every 3 seconds
+                const detailTriggers = document.querySelectorAll('.view-course-details-trigger');
+
+                detailTriggers.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const name = this.dataset.name;
+                        const level = this.dataset.level;
+                        const price = this.dataset.price;
+                        const description = this.dataset.description;
+                        const duration = this.dataset.duration;
+                        const videoUrl = this.dataset.videoUrl;
+
+                        if (modalCourseName) modalCourseName.textContent = name;
+                        if (modalCourseLevel) modalCourseLevel.textContent = level;
+                        if (modalCoursePrice) modalCoursePrice.textContent = price;
+                        if (modalCourseDuration) modalCourseDuration.textContent = duration;
+                        if (modalCourseDescription) modalCourseDescription.innerHTML = description; // Use innerHTML if description contains HTML formatting
+
+                        if (videoUrl && modalCourseVideo) {
+                            let embedUrl = videoUrl;
+                            if (videoUrl.includes("youtube.com/watch?v=")) {
+                                embedUrl = videoUrl.replace("watch?v=", "embed/");
+                            } else if (videoUrl.includes("youtu.be/")) {
+                                embedUrl = videoUrl.replace("youtu.be/", "youtube.com/embed/");
+                            }
+                            // Remove query parameters like list, t, etc. from YouTube embed URL
+                            if (embedUrl.includes("?")) {
+                                embedUrl = embedUrl.substring(0, embedUrl.indexOf("?"));
+                            }
+                            modalCourseVideo.src = embedUrl;
+                            if (modalCourseVideoContainer) modalCourseVideoContainer.style.display = 'block';
+                        } else {
+                            if (modalCourseVideo) modalCourseVideo.src = '';
+                            if (modalCourseVideoContainer) modalCourseVideoContainer.style.display = 'none';
+                        }
+                        modal.style.display = 'block';
+                    });
+                });
+
+                if (closeButton) {
+                    closeButton.addEventListener('click', function () {
+                        modal.style.display = 'none';
+                        if (modalCourseVideo) modalCourseVideo.src = ''; // Stop video when closing
+                    });
+                }
+
+                window.addEventListener('click', function (event) {
+                    if (event.target == modal) {
+                        modal.style.display = 'none';
+                        if (modalCourseVideo) modalCourseVideo.src = ''; // Stop video when closing
+                    }
+                });
+            }
+            // Existing FAQ script should be here if it's not already in base.html or another global script.
+            // (It was included above, so I've kept its relative position)
         });
     </script>
     <script src="{% static 'app/js/payment.js' %}"></script>
-</body>
-{% endblock content %}
+    </body>
+    {% endblock content %}
