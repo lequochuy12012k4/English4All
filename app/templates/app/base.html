@@ -223,9 +223,15 @@
                 <li><a href="{%url 'vinh_danh' %}" class="vinh_danh">Vinh danh</a></li>
                 <li><a href="{%url 'flash_card' %}" class="flash_card">Flash Card</a></li>
             </ul>
+            {% if user.is_authenticated %}
             <div class="test_online_header">
                 <a href="{%url 'test' %}" class="test_online">TEST ONLINE</a>
             </div>
+            {% else %}
+            <div class="test_online_header">
+                <a href="{%url 'login' %}" class="test_online">TEST ONLINE</a>
+            </div>
+            {% endif %}
             <div class="auth" style="visibility: {{user_not_login}}">
                 <a href="{%url 'login' %}" id="loginBtn" class="login">Đăng nhập</a>
                 <a href="{%url 'register' %}" id="registerBtn" class="register">Đăng ký</a>
