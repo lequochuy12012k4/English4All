@@ -1,6 +1,7 @@
 {% extends 'app/base.html' %}
 {% load static %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'app/css/home.css' %}">
 
 <body>
     <section class="hero">
@@ -53,13 +54,6 @@
                         class="btn view-course-details buy-course" data-course-id="TiengAnhGiaoTiep">Mua khóa
                         học</button>
                 </form>
-                <script>
-                    function confirmPurchase() {
-
-                        alert("Khóa học được thêm vào phần thanh toán")
-
-                    }
-                </script>
                 {% else %}
                 <a href="{%url 'login' %}">
                     <button class="btn view-course-details" data-course-id="TiengAnhGiaoTiep">Đăng nhập</button>
@@ -69,131 +63,9 @@
             {% endfor %}
         </div>
         <div class="course-controls">
-            <button id="prev-course">
-                < </button>
-                    <button id="next-course"> > </button>
+            <button id="prev-course"> < </button>
+            <button id="next-course"> > </button>
         </div>
-        <style>
-            .course-item {
-                display: none;
-                /* Ẩn tất cả các khóa học ban đầu */
-            }
-
-            .course-item.active {
-                display: block;
-                /* Hiển thị các khóa học được chọn */
-            }
-
-            .course-item.active {
-                display: block;
-                opacity: 0;
-                transform: translateY(20px);
-                transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-            }
-
-            .course-item.active.show {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-            .course-controls {
-                position: relative;
-                /* Đặt position relative cho container */
-
-            }
-
-            #prev-course,
-            #next-course {
-                position: absolute;
-                top: -275px;
-                transform: translateY(-50%);
-                padding: 140px 20px;
-                font-size: 150px;
-                cursor: pointer;
-                background-color: transparent;
-                border: none;
-                color: #007bff;
-            }
-
-            #prev-course {
-                left: 0;
-            }
-
-            #next-course {
-                right: 0;
-            }
-        </style>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const courseItems = document.querySelectorAll('.course-item');
-                const prevButton = document.getElementById('prev-course');
-                const nextButton = document.getElementById('next-course');
-                let currentIndex = 0;
-                const itemsPerPage = 4; // Số lượng khóa học hiển thị
-
-                function showCourses() {
-                    courseItems.forEach((item, index) => {
-                        if (index >= currentIndex && index < currentIndex + itemsPerPage) {
-                            item.classList.add('active');
-                        } else {
-                            item.classList.remove('active');
-                        }
-                    });
-                }
-
-                function updateButtons() {
-                    prevButton.disabled = currentIndex === 0;
-                    nextButton.disabled = currentIndex + itemsPerPage >= courseItems.length;
-                }
-
-                showCourses();
-                updateButtons();
-
-                prevButton.addEventListener('click', function () {
-                    currentIndex = Math.max(0, currentIndex - 1);
-                    showCourses();
-                    updateButtons();
-                    courseItems.forEach(item => {
-                        item.style.transition = 'transform 0.5s ease-in-out';
-                        item.style.transform = 'translateX(100px)'; // Di chuyển sang phải
-                        setTimeout(() => {
-                            item.style.transition = 'none';
-                            item.style.transform = 'translateX(0)';
-                            showCourses();
-                            updateButtons();
-                        }, 500); // Đợi animation kết thúc
-                    });
-                });
-
-                nextButton.addEventListener('click', function () {
-                    if (currentIndex + itemsPerPage < courseItems.length) {
-                        currentIndex++;
-                        showCourses();
-                        updateButtons();
-                    }
-                    courseItems.forEach(item => {
-                        item.style.transition = 'transform 0.5s ease-in-out';
-                        item.style.transform = 'translateX(-100px)'; // Di chuyển sang trái
-                        setTimeout(() => {
-                            item.style.transition = 'none';
-                            item.style.transform = 'translateX(0)';
-                            showCourses();
-                            updateButtons();
-                        }, 500); // Đợi animation kết thúc
-                    });
-                });
-                function showCourses() {
-                    courseItems.forEach((item, index) => {
-                        if (index >= currentIndex && index < currentIndex + itemsPerPage) {
-                            item.classList.add('active');
-                            setTimeout(() => item.classList.add('show'), 10); // Thêm class 'show' sau một khoảng thời gian ngắn
-                        } else {
-                            item.classList.remove('active', 'show');
-                        }
-                    });
-                }
-            });
-        </script>
     </section>
     {% endblock course %}
 
@@ -270,84 +142,6 @@
             </div>
         </div>
     </section>
-    <style>
-        /* University Logos Section */
-        .university-logos {
-            padding: 50px 20px;
-            text-align: center;
-            background-color: #ffffff;
-        }
-
-        .university-logos h2 {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #343a40;
-            margin-bottom: 30px;
-        }
-
-        .logo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            /* Responsive grid */
-            gap: 20px;
-            justify-items: center;
-            /* Center items horizontally within each cell */
-            align-items: center;
-            /* Vertically center items within each cell */
-            padding: 0;
-            /* Remove padding */
-            margin: 0 auto;
-            /* Center the grid itself */
-            max-width: 1200px;
-            /* Adjust as needed */
-        }
-
-        .logo-grid img {
-            max-width: 100px;
-            /* Adjust the size of the logos */
-            height: auto;
-            opacity: 0.7;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        .logo-grid img:hover {
-            opacity: 1;
-            transform: scale(1.1);
-            /* Slight zoom on hover */
-        }
-
-        /* Basic Slider Styles */
-        .slider {
-            width: 500px;
-            /* Adjust as needed */
-            height: 300px;
-            /* Adjust as needed */
-            overflow: hidden;
-            position: relative;
-        }
-
-        .slide {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 100%;
-            /* Start off-screen to the right */
-            transition: left 1s ease-in-out;
-        }
-
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* Maintain aspect ratio */
-        }
-
-        .slide.active {
-            left: 0;
-            /* Bring the active slide into view */
-        }
-    </style>
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <h2>Thông tin đăng ký</h2>
@@ -366,12 +160,6 @@
             <input type="number" placeholder="Mục tiêu" name="target">
             <input type="submit" class="btn" value="Đăng ký ngay"></input>
         </form>
-        <script>
-            function showRegistrationAlert() {
-                alert("Thông tin đăng ký đã được gửi vào gmail của bạn!");
-                return true; // Allow the form to submit
-            }
-        </script>
     </section>
     <section class="faq">
         <h2>Câu hỏi thường gặp về lộ trình học</h2>
@@ -504,215 +292,9 @@
             </div>
         </div>
     </div>
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            /* Ensure it's above other content */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.6);
-            padding-top: 50px;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 25px;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 700px;
-            border-radius: 8px;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .close-button {
-            color: #aaa;
-            position: absolute;
-            /* Changed from float for better control */
-            top: 10px;
-            right: 15px;
-            font-size: 30px;
-            font-weight: bold;
-            line-height: 1;
-        }
-
-        .close-button:hover,
-        .close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        #modalCourseVideoContainer iframe {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            height: auto;
-            border-radius: 4px;
-        }
-
-        .view-course-details-trigger {
-            /* Basic styling for the new button */
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            border: 1px solid #17a2b8;
-            font-weight: bold;
-        }
-
-        .view-course-details-trigger:hover {
-            background-color: #138496 !important;
-            /* ensure hover is darker */
-        }
-    </style>
-    <style>
-        /* FAQ Styles */
-        .faq {
-            padding: 30px;
-            background-color: #f8f9fa;
-        }
-
-        .faq h2 {
-            font-size: 2.2rem;
-            text-align: center;
-            margin-bottom: 30px;
-            color: #343a40;
-        }
-
-        .faq-list {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .faq-item {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 15px;
-            overflow: hidden;
-            /* Important for animation */
-            transition: box-shadow 0.3s ease;
-            /* Smooth transition */
-        }
-
-        .faq-item:hover {
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-
-        .faq-question {
-            padding: 15px 20px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #343a40;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .faq-question:hover {
-            background-color: #f1f3f5;
-        }
-
-        .faq-question i {
-            transition: transform 0.3s ease;
-        }
-
-        .faq-question.active i {
-            transform: rotate(180deg);
-            /* Rotate the icon */
-        }
-
-        .faq-answer {
-            padding: 0 20px;
-            font-size: 1rem;
-            color: #495057;
-            line-height: 1.5;
-            height: 0;
-            /* Initially hidden */
-            overflow: hidden;
-            transition: height 0.3s ease, padding 0.3s ease;
-        }
-
-        .faq-answer.active {
-            height: auto;
-            /* Expand height */
-            padding: 15px 20px;
-            /* Add padding when visible */
-        }
-    </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const faqItems = document.querySelectorAll('.faq-item');
-
-            faqItems.forEach(item => {
-                const question = item.querySelector('.faq-question');
-                const answer = item.querySelector('.faq-answer');
-                const icon = item.querySelector('.faq-question i'); // Select the icon
-
-                question.addEventListener('click', () => {
-                    // Toggle active class on question
-                    question.classList.toggle('active');
-
-                    // Toggle active class on answer
-                    answer.classList.toggle('active');
-
-                    //Toggle font awesome class to chevron
-                    icon.classList.toggle('fas-fa-chevron-up');
-
-                });
-            });
-        });
-    </script>
     <section id="contact" class="contact_info">
         <h2 id="contact_info" class="contact_info_title" style="text-align: center; padding-top: 15px;">Thông tin liên
             hệ </h2>
-        <style>
-            body {
-                background-color: rgb(255, 255, 255);
-                color: rgb(0, 0, 0);
-                font-family: sans-serif;
-            }
-
-            .contact_info_title {
-                font-size: 30px;
-
-            }
-
-            .container {
-                display: flex;
-                justify-content: space-around;
-                padding: 20px;
-            }
-
-            .section {
-                width: 30%;
-            }
-
-            .address-item {
-                margin-bottom: 10px;
-            }
-
-            .contact-item {
-                margin-bottom: 10px;
-            }
-
-            .map-link {
-                display: block;
-                padding: 10px 20px;
-                border: 1px solid white;
-                text-align: center;
-                text-decoration: none;
-                color: white;
-                width: 100px;
-            }
-        </style>
         </head>
 
         <body>
@@ -760,22 +342,6 @@
                                 style="max-width: 30%; height: auto;"></a><br>
                         <a href=""><img src="{% static 'app/images/photo/slider_home/slider1.png' %}" alt="photo2.png"
                                 style="max-width: 30%; height: auto;"></a>
-                        <style>
-                            .fanpage-item {
-                                height: auto;
-                                width: 100%;
-                                /* Adjust to 100% */
-                                text-align: center;
-                                /*Center fanpage in this section */
-                            }
-
-                            .fanpage-item img {
-                                display: block;
-                                /* Prevent images from floating next to each other */
-                                margin: 0 auto;
-                                margin-left: 15px;
-                            }
-                        </style>
                     </div>
                 </div>
             </div>
@@ -790,110 +356,7 @@
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const slides = document.querySelectorAll('.slide');
-            let currentSlide = 0;
-
-            // Initially set all slides to be offscreen to the right.  This makes the "cover" animation work
-            slides.forEach((slide, index) => {
-                slide.style.left = '100%';
-                if (index === 0) {
-                    slide.classList.add('active');
-                    slide.style.left = '0'; // Make the initial slide visible.
-                } else {
-                    slide.classList.remove('active');
-                }
-            });
-
-            function showSlide(n) {
-                // Remove active class from current slide
-                slides[currentSlide].classList.remove('active');
-                slides[currentSlide].style.left = '-100%'; // Move current slide offscreen to the left
-
-                // Update current slide
-                currentSlide = n;
-
-                // Add active class to new slide
-                slides[currentSlide].classList.add('active');
-                slides[currentSlide].style.left = '0'; // Slide in from the right
-            }
-
-            function nextSlide() {
-                let next = (currentSlide + 1) % slides.length;
-                showSlide(next);
-            }
-
-            setInterval(nextSlide, 3000); // Change slide every 3 seconds
-        });
-    </script>
-    <script>
-        const modal = document.getElementById('courseDetailsModal');
-        if (modal) { // Check if modal exists
-            const modalCourseName = document.getElementById('modalCourseName');
-            const modalCourseLevel = document.getElementById('modalCourseLevel');
-            const modalCoursePrice = document.getElementById('modalCoursePrice');
-            const modalCourseDuration = document.getElementById('modalCourseDuration');
-            const modalCourseDescription = document.getElementById('modalCourseDescription');
-            const modalCourseVideo = document.getElementById('modalCourseVideo');
-            const modalCourseVideoContainer = document.getElementById('modalCourseVideoContainer');
-            const closeButton = modal.querySelector('.close-button');
-
-            const detailTriggers = document.querySelectorAll('.view-course-details-trigger');
-
-            detailTriggers.forEach(button => {
-                button.addEventListener('click', function () {
-                    const name = this.dataset.name;
-                    const level = this.dataset.level;
-                    const price = this.dataset.price;
-                    const description = this.dataset.description;
-                    const duration = this.dataset.duration;
-                    const videoUrl = this.dataset.videoUrl;
-
-                    if (modalCourseName) modalCourseName.textContent = name;
-                    if (modalCourseLevel) modalCourseLevel.textContent = level;
-                    if (modalCoursePrice) modalCoursePrice.textContent = price;
-                    if (modalCourseDuration) modalCourseDuration.textContent = duration;
-                    if (modalCourseDescription) modalCourseDescription.innerHTML = description; // Use innerHTML if description contains HTML formatting
-
-                    if (videoUrl && modalCourseVideo) {
-                        let embedUrl = videoUrl;
-                        if (videoUrl.includes("youtube.com/watch?v=")) {
-                            embedUrl = videoUrl.replace("watch?v=", "embed/");
-                        } else if (videoUrl.includes("youtu.be/")) {
-                            embedUrl = videoUrl.replace("youtu.be/", "youtube.com/embed/");
-                        }
-                        // Remove query parameters like list, t, etc. from YouTube embed URL
-                        if (embedUrl.includes("?")) {
-                            embedUrl = embedUrl.substring(0, embedUrl.indexOf("?"));
-                        }
-                        modalCourseVideo.src = embedUrl;
-                        if (modalCourseVideoContainer) modalCourseVideoContainer.style.display = 'block';
-                    } else {
-                        if (modalCourseVideo) modalCourseVideo.src = '';
-                        if (modalCourseVideoContainer) modalCourseVideoContainer.style.display = 'none';
-                    }
-                    modal.style.display = 'block';
-                });
-            });
-
-            if (closeButton) {
-                closeButton.addEventListener('click', function () {
-                    modal.style.display = 'none';
-                    if (modalCourseVideo) modalCourseVideo.src = ''; // Stop video when closing
-                });
-            }
-
-            window.addEventListener('click', function (event) {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
-                    if (modalCourseVideo) modalCourseVideo.src = ''; // Stop video when closing
-                }
-            });
-        }
-        // Existing FAQ script should be here if it's not already in base.html or another global script.
-        // (It was included above, so I've kept its relative position)
-    </script>
+    <script src="{% static 'app/js/home.js' %}"></script>
     <script src="{% static 'app/js/payment.js' %}"></script>
 </body>
 {% endblock content %}

@@ -21,7 +21,8 @@
         content="Nâng cao trình độ tiếng Anh của bạn một cách dễ dàng với English4All!">
     <meta name="twitter:image" content="{% static 'app/images/icons/logo.png' %}">
     <title>{% block title %}{% endblock %}English4All</title>
-    <link rel="stylesheet" href="{% static 'app\css\base.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'app/css/style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
         integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -54,31 +55,16 @@
             <div class="logo">
                 <a href="{%url 'home' %}">English4All</a>
             </div>
-            <style>
-                .logo {
-                    padding-right: 150px;
-                }
-            </style>
-            <ul>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links">
                 <li class="gioi_thieu">
                     <a href="{%url 'gioi_thieu' %}">Giới thiệu</a>
                 </li>
                 <li class="khoa_hoc">
                     <a href="{% url 'tai_lieu' %}">Tài liệu</a>
                     <ul class="sub-menu" id="tai_lieu_list">
-
-                        <style>
-                            .sub-menu form {
-                                display: flex;
-                                /* This will arrange the li horizontally by default */
-                                justify-content: space-around;
-                                /* Spread the buttons evenly */
-                                align-items: center;
-                                /* Ensure they align vertically in the middle */
-                                padding: 10px;
-                                /* Added padding to the container */
-                            }
-                        </style>
                         <li class="li-btn">
                             <a href="{%url 'tai_lieu' %}"><button class="course-btn-filter" type="submit"
                                      value="Tai_lieu"><b>Tài liệu</b></button></a>
@@ -91,59 +77,6 @@
                             <a href="{%url 'sach' %}"><button class="course-btn-filter" type="submit"
                                     value="Sach"><b>Sách</b></button></a>
                         </li>
-                        <style>
-                            #tai_lieu_list {
-                                width: 170%;
-                            }
-
-                            .course-btn-filter {
-                                background: none;
-                                border: none;
-                                font-size: 17px;
-                                text-align: center;
-                                color: black;
-                                padding: 10px;
-                                /* Reduced padding */
-                                display: block;
-                                /* Remove inline spacing */
-                            }
-
-                            .course-btn-filter:hover {
-                                color: white;
-                                border-radius: 5px;
-                                border: 1px solid #007bff;
-                                transition: all 0.3s ease;
-                                background-color: #007bff;
-                            }
-
-                            .li-btn {
-                                text-align: center;
-                                /* Center the content */
-                            }
-
-                            .sub-menu {
-                                display: flex;
-                                position: relative;
-                                flex-direction: column;
-                                /*Reverting to column*/
-                                top: 0;
-                                left: 0;
-                                transform: none;
-                                padding: 0;
-                                width: auto;
-                                /* Removing fixed width */
-                                background: #f0f0f0;
-                                /* Light background */
-                                border-radius: 8px;
-                                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-                                /* Rounded corners and shadow */
-                            }
-
-                            ul.sub-menu {
-                                display: block;
-                                /* Ensure sub-menu displays properly */
-                            }
-                        </style>
                     </ul>
                 </li>
                 <li class="khoa_hoc">
@@ -151,15 +84,6 @@
                     <ul class="sub-menu">
                         <form action="{% url 'course' %}" role="filter" method="POST">
                             {% csrf_token %}
-                            <style>
-                                .sub-menu form {
-                                    display: flex;
-                                    flex-direction: column;
-                                    /* Stack li elements vertically */
-                                    align-items: stretch;
-                                    /* Stretch items to fill width */
-                                }
-                            </style>
                             <li class="li-btn">
                                 <input type="hidden" name="current_filter" value="{{ filter_course }}">
                                 <button class="course-btn-filter" type="submit" name="filter_course"
@@ -175,46 +99,6 @@
                                 <button class="course-btn-filter" type="submit" name="filter_course"
                                     value="THPTQG"><b>THPTQG</b></button>
                             </li>
-                            <style>
-                                .course-btn-filter {
-                                    background: none;
-                                    border: none;
-                                    font-size: 17px;
-                                    text-align: center;
-                                    color: black;
-                                    padding: 5px 10px;
-                                    width: 100%;
-                                    /* Force buttons to fill the width */
-                                    display: block;
-                                    /* Remove inline spacing */
-                                }
-
-                                .course-btn-filter:hover {
-                                    color: white;
-                                    border-radius: 5px;
-                                    border: 1px solid #007bff;
-                                    transition: all 0.3s ease;
-                                    background-color: #007bff;
-                                }
-
-                                .li-btn {
-                                    width: 100%;
-                                    /* Fill available space in column */
-                                }
-
-                                .sub-menu {
-                                    display: flex;
-                                    position: relative;
-                                    flex-direction: column;
-                                    top: 0;
-                                    left: 0;
-                                    transform: none;
-                                    padding: 0;
-                                    width: auto;
-                                    background: none;
-                                    box-shadow: none;
-                                }
-                            </style>
                         </form>
                     </ul>
                 </li>
@@ -254,18 +138,6 @@
                                 <a href="{%url 'thanh_toan' %}">Thanh toán
                                     <span id="item-total">{{ thanh_toan_items }}</span>
                                 </a>
-                                <style>
-                                    #item-total {
-                                        color: rgb(255, 255, 255);
-                                        margin-left: 5px;
-                                        background-color: red;
-                                        justify-content: center;
-                                        border-radius: 15px;
-                                        /* Increased for rounder */
-                                        padding: 2px 8px;
-                                        /* Added padding for better look */
-                                    }
-                                </style>
                                 {% else %}
                                 <a href="{%url 'thanh_toan' %}">Thanh toán
                                 </a>
@@ -330,330 +202,13 @@
     <footer>
         <p>© 2025 English4All. All rights reserved.</p>
     </footer>
-    <style>
-        /* General Styles */
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Chatbot Container */
-        #chatbot-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 350px;
-            height: 500px;
-            background-color: #1E293B;
-            /* Dark background */
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            display: none;
-            /* Hidden by default */
-            flex-direction: column;
-            overflow: hidden;
-            color: #CBD5E0;
-            /* Light text color */
-            z-index: 1000;
-        }
-
-        #chatbot-container.active {
-            display: flex;
-        }
-
-        /* Chatbot Header */
-        #chatbot-header {
-            background-color: #334155;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
-        #chatbot-header img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        #chatbot-header-info {
-            flex-grow: 1;
-            text-align: left;
-        }
-
-        #chatbot-name {
-            font-weight: bold;
-            font-size: 1.1em;
-            color: #fff;
-        }
-
-        #chatbot-description {
-            font-size: 0.9em;
-            color: #94A3B8;
-        }
-
-        #header-icons {
-            display: flex;
-            align-items: center;
-        }
-
-        #header-icons i,
-        #close-button {
-            margin-left: 10px;
-            cursor: pointer;
-            font-size: 1.2em;
-        }
-
-        #header-icons i {
-            color: #94A3B8;
-        }
-
-        #close-button {
-            color: #CBD5E0;
-        }
-
-
-        /* Chatbot Messages */
-        #chatbot-messages {
-            flex-grow: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-message,
-        .bot-message {
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            border-radius: 20px;
-            max-width: 80%;
-            word-wrap: break-word;
-        }
-
-        .user-message {
-            background-color: #475569;
-            /* Darker blue for user */
-            align-self: flex-end;
-            text-align: right;
-        }
-
-        .bot-message {
-            background-color: #334155;
-            /* Light blue for bot */
-            align-self: flex-start;
-            text-align: left;
-        }
-
-        /* Chatbot Input Area */
-        #chatbot-input-area {
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            background-color: #334155;
-        }
-
-        #user-input {
-            flex-grow: 1;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 25px;
-            background-color: #475569;
-            color: #CBD5E0;
-            outline: none;
-            font-size: 1em;
-            margin-right: 10px;
-        }
-
-        #send-button {
-            background-color: #007bff;
-            /* Blue send button */
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #send-button i {
-            margin: 0;
-        }
-
-        /* Chatbot Footer */
-        #chatbot-footer {
-            padding: 10px;
-            text-align: center;
-            font-size: 0.8em;
-            color: #94A3B8;
-        }
-
-        /* Chatbot Icon */
-        #chatbot-icon {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #1E293B;
-            /* Dark background for icon */
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            z-index: 999;
-        }
-
-        #chatbot-icon img {
-            max-width: 40px;
-            max-height: 40px;
-            border-radius: 50%;
-        }
-
-        /* Message Animation */
-        @keyframes zoomInContainer {
-            0% {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-
-            /* Start smaller and transparent */
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            /* End at normal size and fully visible */
-        }
-
-        /* Apply the zoom-in animation to the chatbot container */
-        #chatbot-container.active {
-            display: flex;
-            /* Ensure it's displayed */
-            animation: zoomInContainer 0.3s ease-out forwards;
-            /* Shorter duration for the container */
-        }
-
-        @keyframes zoomInIcon {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.2);
-            }
-
-            /* Zoom in more significantly */
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        /* Apply the zoom animation to the chatbot icon */
-        #chatbot-icon.zoom {
-            animation: zoomInIcon 2s ease-in-out infinite;
-            /* Longer duration for a more noticeable effect */
-        }
-
-        #chatbot-icon:hover {
-            animation: none;
-            /* Stop animation on hover */
-        }
-
-        #chatbot-preview-question {
-            position: fixed;
-            bottom: 80px;
-            right: 80px;
-            background-color: #334155;
-            color: #CBD5E0;
-            border-radius: 10px;
-            padding: 10px;
-            max-width: 200px;
-            font-size: 0.9em;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            z-index: 998;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-        }
-
-        #chatbot-preview-question.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #chatbot-preview-question {
-            /* ... các kiểu dáng khác ... */
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-
-        #chatbot-preview-question.fade-in {
-            opacity: 1;
-        }
-
-        #chatbot-preview-question.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .bot-message,
-        .user-message {
-            /* ... các kiểu dáng khác ... */
-            opacity: 1;
-            transition: opacity 1s ease;
-        }
-
-        .bot-message.fade-in,
-        .user-message.fade-in {
-            opacity: 1;
-        }
-
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-        }
-
-        .typing-indicator span {
-            width: 8px;
-            height: 8px;
-            background-color: #CBD5E0;
-            border-radius: 50%;
-            margin: 0 4px;
-            animation: typing 1.4s infinite ease-in-out;
-        }
-
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typing {
-            0% {
-                transform: translateY(0);
-            }
-
-            28% {
-                transform: translateY(-5px);
-            }
-
-            44% {
-                transform: translateY(0);
-            }
-        }
-    </style>
     <script>
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
         const chatbotIcon = document.getElementById('chatbot-icon');
         const chatbotContainer = document.getElementById('chatbot-container');
         const chatbotMessages = document.getElementById('chatbot-messages');
