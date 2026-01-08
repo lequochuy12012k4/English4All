@@ -114,22 +114,15 @@ WSGI_APPLICATION = 'english_web.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-# DATABASES = {
-#     "default":{
-#         'ENGINE':'django.db.backends.sqlite3',
-#         'NAME':'mydatabase'
-#     }
-#     # "default": {
-#     #     'ENGINE':'django.db.backends.postgresql',
-#     #     'NAME':'railway',
-#     #     'USER':'postgres',
-#     #     'PASSWORD':os.environ.get('DB_PASSWORD'),  
-#     #     'HOST':'tramway.proxy.rlwy.net',
-#     #     'PORT':'49047'
-#     # }
-# }
-database_url = os.getenv('DATABASE_URL')
-DATABASES['default'] = dj_database_url.parse(database_url)
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "mydatabase",
+    }
+}
+database_url = os.getenv("DATABASE_URL")
+if database_url:
+    DATABASES["default"] = dj_database_url.parse(database_url)
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
