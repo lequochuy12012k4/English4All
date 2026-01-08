@@ -77,6 +77,7 @@ SOCIAL_ACCOUNT_PROVIDERS = {
 }
 
 MIDDLEWARE = [
+    'app.middleware.NoCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
